@@ -1,6 +1,6 @@
 
-TODO LIST [Scriptr.space]
-=========================
+TODO LIST
+=========
 * Custom Syntax Highlighter / Mode for Google Apps Script? - https://github.com/ajaxorg/ace/wiki/Creating-or-Extending-an-Edit-Mode
 * Save settings (e.g. current font, current theme to Local Storage?)
 * Save-All Function - CRTL-SHIFT-S?
