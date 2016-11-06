@@ -1,7 +1,7 @@
 
 🐧 SCRIPTR.SPACE 🐧
 ===================
-A web-based tool for Google Apps Scripts. Better editing, local storage, saving, diff'ing and committing to Github. Built atop of [Ace][1] for speed, familiarity & ease of use.
+A web-based tool for Google Apps Scripts. Better editing, local storage, saving, diff'ing & committing to Github. Built on [Ace][1] for speed, familiarity & ease of use.
 
 Most interaction is done via keyboard shortcuts (listed blow) for simplicity. Small icons and colours are used to indicate current (♥), changed (★) and saved (✔) files.
 
