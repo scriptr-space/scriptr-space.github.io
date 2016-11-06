@@ -25,6 +25,5 @@ Keyboard Help
 * Show these Instructions       ==>     __[ALT | ⌥] + I__
 * Show License                  ==>     __[ALT | ⌥] + L__
 * Show Shortcuts                ==>     __[ALT | ⌥] + S__
-* Show To-Do                    ==>     __[ALT | ⌥] + T__
 
   [1]: https://ace.c9.io/ "Ace - The high performance code editor for the web"
