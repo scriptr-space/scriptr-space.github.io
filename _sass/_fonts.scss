@@ -1,0 +1,38 @@
+.foo {content: "bar";}
+
+html {
+	font-family: $font-general;
+  font-weight: $font-weight;
+  font-feature-settings: "kern";
+  -webkit-font-feature-settings: "kern";
+  -moz-font-feature-settings: "kern";
+  -moz-font-feature-settings: "kern=1";
+  font-kerning: normal;
+	line-height: 1.4  // Shift to variables;
+}
+
+body {	
+	font-size: 12px; // font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  & > * {font-size: 100%; color: $colour-foreground;}
+}
+
+h1 {color: $colour-highlight;}
+h2, h3, h4, h5, h6 {color: $colour-emphasis;}
+h1, h2, h3, h4, h5, h6 {
+	letter-spacing: $font-spacing-heading;
+  font-family: $font-heading;
+  font-weight: $font-weight-heading;
+  margin: 0.6em 0 0.2em 0;
+	a {
+		color: $colour-emphasis;
+		&:hover {color: $colour-highlight;}
+	}
+}
+
+h6 {font-size: 100%};
+h5 {font-size: 105%};
+h4 {font-size: 110%};
+h3 {font-size: 120%};
+h2 {font-size: 150%};
+h1 {font-size: 300%};

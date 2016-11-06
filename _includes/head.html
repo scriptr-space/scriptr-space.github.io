@@ -1,0 +1,204 @@
+	<head>
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta http-equiv="content-type" content="text/html; charset=utf-8">
+		<meta name="description" content="{{ site.description }}">	
+		
+		<!-- Enable responsiveness on mobile devices-->
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=0">
+
+		<title>
+			{% if page.title == "Home" %}
+				{{ site.title }}
+			{% elsif page.title %}
+				{{ page.title }}
+			{% else %}
+				{{ site.title }}
+			{% endif %}
+		</title>
+
+		<!-- Latest compiled and minified Bootstrap CSS -->
+		<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> --.
+		
+		<!-- CSS -->
+		<style type="text/css">{% capture include_to_scssify %}{% include style.scss %}{% endcapture %}{{ include_to_scssify | scssify }}</style>
+		
+		<!-- Async CSS -->
+		<link rel="preload" href="//fonts.googleapis.com/css?family={{ site.fonts }}" as="style" onload="this.rel='stylesheet'">
+		<noscript><link rel="stylesheet" href="//fonts.googleapis.com/css?family={{ site.fonts }}"></noscript>
+		<!-- Script from: https://github.com/filamentgroup/loadCSS Licence = The MIT License (MIT) | Copyright (c) 2014 Filament Group -->
+		<script>
+			(function(w){
+				"use strict";
+				var loadCSS = function( href, before, media ){
+					var doc = w.document;
+					var ss = doc.createElement( "link" );
+					var ref;
+					if( before ){
+						ref = before;
+					}
+					else {
+						var refs = ( doc.body || doc.getElementsByTagName( "head" )[ 0 ] ).childNodes;
+						ref = refs[ refs.length - 1];
+					}
+
+					var sheets = doc.styleSheets;
+					ss.rel = "stylesheet";
+					ss.href = href;
+					ss.media = "only x";
+
+					function ready( cb ){
+						if( doc.body ){
+							return cb();
+						}
+						setTimeout(function(){
+							ready( cb );
+						});
+					}
+
+					ready( function(){
+						ref.parentNode.insertBefore( ss, ( before ? ref : ref.nextSibling ) );
+					});
+
+					var onloadcssdefined = function( cb ){
+						var resolvedHref = ss.href;
+						var i = sheets.length;
+						while( i-- ){
+							if( sheets[ i ].href === resolvedHref ){
+								return cb();
+							}
+						}
+						setTimeout(function() {
+							onloadcssdefined( cb );
+						});
+					};
+
+					function loadCB(){
+						if( ss.addEventListener ){
+							ss.removeEventListener( "load", loadCB );
+						}
+						ss.media = media || "all";
+					}
+
+					if( ss.addEventListener ){
+						ss.addEventListener( "load", loadCB);
+					}
+					ss.onloadcssdefined = onloadcssdefined;
+					onloadcssdefined( loadCB );
+					return ss;
+				};
+				if( typeof exports !== "undefined" ){
+					exports.loadCSS = loadCSS;
+				}
+				else {
+					w.loadCSS = loadCSS;
+				}
+			}( typeof global !== "undefined" ? global : this ));
+
+			(function( w ){
+
+				if( !w.loadCSS ){
+					return;
+				}
+				var rp = loadCSS.relpreload = {};
+				rp.support = function(){
+					try {
+						return w.document.createElement("link").relList.supports( "preload" );
+					} catch (e) {}
+				};
+
+				rp.poly = function(){
+					var links = w.document.getElementsByTagName( "link" );
+					for( var i = 0; i < links.length; i++ ){
+						var link = links[ i ];
+						if( link.rel === "preload" && (link.getAttribute( "as" ) === "style" | link.getAttribute( "as" ) === "stylesheet" )){
+							w.loadCSS( link.href, link );
+							link.rel = null;
+						}
+					}
+				};
+
+				if( !rp.support() ){
+					rp.poly();
+					var run = w.setInterval( rp.poly, 300 );
+					if( w.addEventListener ){
+						w.addEventListener( "load", function(){
+							w.clearInterval( run );
+						} )
+					}
+				}
+			}( this ));
+		</script>
+		
+		
+		<!-- Google Hosted JS-API -->
+		<script src="https://apis.google.com/js/api.js"></script>
+		
+		<!-- Google CDN Hosted JQuery -->
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+		
+		<!-- Cloudflare hosted JS-Diff -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/3.0.0/diff.min.js"></script>
+		
+		<!-- Cloudflare hosted JSHashes -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jshashes/1.0.5/hashes.min.js"></script>
+		
+		<!-- Cloudflare hosted Screenful -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/screenfull.js/3.0.2/screenfull.min.js"></script>
+		
+		<!-- Cloudflare hosted LocalForage -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.4.2/localforage.min.js"></script>
+		
+		<!-- Cloudflare hosted Hammer -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js"></script>
+		
+		<!-- Cloudflare hosted URL Parser -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-url-parser/2.3.1/purl.min.js"></script>
+		
+		<!-- Cloudflare hosted Github-API -->
+		<!--
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/github-api/2.3.0/GitHub.min.js"></script>
+		-->
+		
+		<!-- Cloudflare hosted UUID Generator -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/node-uuid/1.4.7/uuid.min.js"></script>
+		
+		<!-- Cloudflare hosted ACE -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/ace.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/ext-language_tools.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/ext-emmet.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/mode-html.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/mode-markdown.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/mode-javascript.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/mode-text.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/snippets/html.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/snippets/javascript.js"></script>
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.5/snippets/json.js"></script>
+		
+		<!-- Application Page Script -->
+		{% if page.scripts %}{% assign _scripts = page.scripts | split: ';' %}{% for _script in _scripts %}
+			<script src="{{ site.baseurl }}script/{{ _script }}" type="text/javascript" charset="utf-8"></script>
+		{% endfor %}{% endif %}
+		
+		<!-- Icons -->
+		<link href="data:image/x-icon;base64,AAABAAEAEBAAAAEAIABoBAAAFgAAACgAAAAQAAAAIAAAAAEAIAAAAAAAAAQAABILAAASCwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAKDj+ADg/v8Aa9DxDlPK8TtCx/KWQ8fyskjI81Vr0/UFY9H0AAAAAAAAAAAAAAAAAAAAAAC16foA////AGLR9gxVyO4uR8bwcT3D77s9v+nhNsPx+jnE8vo4xPHQUMvzGVHL8wAAAAAAAAAAAAAAAAAAAAAAV830AFjN9BI+xvKmO8Hs5Tm/6/g3wu/8Pr3n/DvE8P08xfL7PsXy0VTM8xlUzPMAAAAAAAAAAAAAAAAAAAAAAE7K8wBNyvMbN8Px2Dq+6vk/vuf7PMTw+j/B6/FGwuvDQsfyg1HL80J82PYFc9X1AAAAAAAAAAAAAAAAAAAAAABjz/IAZdDzE0bC6sE/vuf8Qbvj9EvC6ZRHyfRIXszwFgBb/wCw3u4AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAUszzAFLM8xg6xPHOOcTy+jjE8fZEx/FqLcDwAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFPL8gBSy/MZO8Lu0j3A6vg8w+/5QMbyxkXI8oVLyfMys+j6AXTV9gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABjz/MAZtHzEkXD7L88vef8O77p/TfD8vs4xPH8OsTytGPQ9Ali0PQAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAATsvzAE3K8xs3xPLVOL/r+Dy95/s7xPH8PMXy/D7F8rli0PQKY9H0AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAFzN8gBczvMWQsLryD+85fpCueD2RcLqu0HH84hTzPM+n+L4An/Z9gAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAABZzfMAW87zFT/E78Y6w/D8O8Lv9ErG72EAq+YAVs3zGlTM8yxj0PQITMrzAPL7/gAAAAAAAAAAAAAAAAAAAAAAT8vzAE7K8xs4w/DWO8Lu+DnD8fhCxvGlR8TsgzrE8tQ8xfLjP8byl1rO9A5YzfQAAAAAAAAAAAAAAAAAAAAAAGPP8gBm0fMSRsLrvz+85vw9wOv8OMLv+Tq96Po2w/H9OsXy+zfE8dpNyvMcTsrzAAAAAAAAAAAAAAAAAAAAAABRy/MAUcvzGTnE8tA4v+z5Or7q/TnD8PtAvuj8P8Pu+D3F8uRFyPKlX8/0El7P9AAAAAAAAAAAAAAAAAAAAAAAVMzzAFTM8xk9xfLQPMLu+kG/6PpAw+7hP8Tvuk/E63BQy/ItZdH1DP///wDQ8fwAAAAAAAAAAAAAAAAAAAAAAHLV9QB+2fYFT8vzVUDG8rFExfCVWsjsOmPT9w3f//8AlOj+AAAAAAAAAAAAAAAAAAAAAAAAAAAA/AcAAOAHAADgBwAA4AcAAOA/AADg/wAA4B8AAOAfAADgHwAA4B8AAOCPAADgBwAA4AcAAOAHAADgBwAA4D8AAA==" rel="shortcut icon" type="image/x-icon">
+		<link rel="apple-touch-icon" sizes="57x57" href="{{ site.baseurl }}ico/apple-icon-57x57.png">
+		<link rel="apple-touch-icon" sizes="60x60" href="{{ site.baseurl }}ico/apple-icon-60x60.png">
+		<link rel="apple-touch-icon" sizes="72x72" href="{{ site.baseurl }}ico/apple-icon-72x72.png">
+		<link rel="apple-touch-icon" sizes="76x76" href="{{ site.baseurl }}ico/apple-icon-76x76.png">
+		<link rel="apple-touch-icon" sizes="114x114" href="{{ site.baseurl }}ico/apple-icon-114x114.png">
+		<link rel="apple-touch-icon" sizes="120x120" href="{{ site.baseurl }}ico/apple-icon-120x120.png">
+		<link rel="apple-touch-icon" sizes="144x144" href="{{ site.baseurl }}ico/apple-icon-144x144.png">
+		<link rel="apple-touch-icon" sizes="152x152" href="{{ site.baseurl }}ico/apple-icon-152x152.png">
+		<link rel="apple-touch-icon" sizes="180x180" href="{{ site.baseurl }}ico/apple-icon-180x180.png">
+		<link rel="icon" type="image/png" sizes="192x192" href="{{ site.baseurl }}ico/android-icon-192x192.png">
+		<link rel="icon" type="image/png" sizes="32x32" href="{{ site.baseurl }}ico/favicon-32x32.png">
+		<link rel="icon" type="image/png" sizes="96x96" href="{{ site.baseurl }}ico/favicon-96x96.png">
+		<link rel="icon" type="image/png" sizes="16x16" href="{{ site.baseurl }}ico/favicon-16x16.png">
+		<link rel="manifest" href="{{ site.baseurl }}ico/manifest.json">
+		<meta name="msapplication-TileColor" content="#ffffff">
+		<meta name="msapplication-TileImage" content="{{ site.baseurl }}ico/ms-icon-144x144.png">
+		<meta name="theme-color" content="#ffffff">
+		
+		<meta name="apple-mobile-web-app-capable" content="yes"> <!-- Allow Home-Pinned Site on IOS -->
+		<meta name="mobile-web-app-capable" content="yes"> <!-- Allow Home-Pinned Site on Android -->
+	</head>

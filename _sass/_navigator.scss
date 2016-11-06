@@ -1,0 +1,47 @@
+div.navigator {
+	z-index: 100;
+	height: 100%;
+	width: 25%;
+	display: inline;
+	float: right;
+	background-color: $colour-navigator;
+	overflow-x: hidden;
+	overflow-y: auto;
+	background-image: url('data:image/svg+xml;utf8,<svg viewBox="0 0 755.906 755.906" fill="none" stroke-linecap="square" stroke-miterlimit="10" xmlns="http://www.w3.org/2000/svg" opacity="0.1"><clipPath id="a"><path d="M0 0h755.905v755.905H0V0z"/></clipPath><g clip-path="url(#a)"><path fill="none" d="M0 0h755.905v755.905H0z"/><path fill="#4c1130" d="M258.677 317.858L16 178.928 258.677 40z"/><path stroke="#fff" stroke-width="2" stroke-linejoin="round" stroke-linecap="butt" d="M258.677 317.858L16 178.928 258.677 40z"/><path fill="#d5a6bd" d="M501.323 178.934L744 317.864 501.323 456.79z"/><path stroke="#fff" stroke-width="4" stroke-linejoin="round" stroke-linecap="butt" d="M501.323 178.934L744 317.864 501.323 456.79z"/><path fill="#741b47" d="M501.323 720.01L744 580.21V317.867l-242.677 139.8z"/><path stroke="#fff" stroke-linejoin="round" stroke-linecap="butt" d="M501.323 720.01L744 580.21V317.867l-242.677 139.8z"/><path fill="#a64d79" d="M258.656 595.708l242.677-139.8V178.92l-242.677 139.8z"/><path stroke="#fff" stroke-width="4" stroke-linejoin="round" stroke-linecap="butt" d="M258.656 595.708l242.677-139.8V178.92l-242.677 139.8z"/><path fill="#c27ba0" d="M258.677 595.708L16 455.908V178.92l242.677 139.8z"/><path stroke="#fff" stroke-width="4" stroke-linejoin="round" stroke-linecap="butt" d="M258.677 595.708L16 455.908V178.92l242.677 139.8z"/></g></svg>');
+	background-repeat: no-repeat;
+	background-position: bottom center;
+  background-size: 90% auto;
+	ul {
+		padding: 0;
+		margin: 1em;
+		font-size: 1.1rem;
+		li {
+			cursor: pointer;
+			list-style: none;
+			a {
+				cursor: pointer;
+				&:hover {
+					color: #77ff77;
+				}
+				&:active {
+					color: #aaaaff;
+				}	
+			}
+			a.status-saved {
+				color: #7ca36e;
+				&:after {content: " ✔";}
+			}
+			a.status-changed {
+				color: #d68777;
+				&:after {content: " ★";}
+			}
+			a.current {
+				color: #dce091;
+				&:before {content: "♥ ";}
+			}
+			ul {
+				margin: 0 0 0.5em 2em;
+			}
+		}
+	}
+}

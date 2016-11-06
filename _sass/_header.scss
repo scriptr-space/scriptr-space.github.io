@@ -1,0 +1,184 @@
+// -- User / Authorisation Elements -- //
+.navbar {
+	display: block;
+	min-height: 40px;
+	#path {
+		padding-top: 6px;
+		span {
+		  font-size: 1.2rem;
+			opacity: 0.6;
+		}
+  }
+}
+
+.navbar-inverse {
+	background-color: #141414;
+	border-color: #080808;
+}
+
+.navbar-inverse .navbar-collapse, .navbar-inverse .navbar-form {
+    border-color: #101010;
+}
+
+.navbar-inverse .navbar-text {
+    color: #9d9d9d;
+}
+
+.navbar-text {
+    float: left;
+    margin-right: 15px;
+    margin-left: 15px;
+}
+
+.navbar-fixed-top {
+	top: 0;
+	border-width: 0 0 1px 0;
+	border-radius: 0;
+	position: fixed;
+    right: 0;
+    left: 0;
+    z-index: 1000;
+}
+
+.navbar-header {
+    float: left;
+}
+
+.navbar-left {
+    float: left!important;
+}
+
+.navbar-right {
+    float: right!important;
+    margin-right: -15px;
+}
+
+.navbar-collapse.collapse {
+    display: block!important;
+    height: auto!important;
+    padding-bottom: 0;
+    overflow: visible!important;
+}
+
+.navbar-collapse {
+    width: auto;
+    border-top: 0;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.navbar-form {
+    width: auto;
+    padding-top: 0;
+    padding-bottom: 0;
+    margin-right: 0;
+    margin-left: 0;
+    border: 0;
+    -webkit-box-shadow: none;
+    box-shadow: none;
+}
+
+.navbar-form .form-group {
+    display: inline-block;
+    margin-bottom: 0;
+    vertical-align: middle;
+}
+
+.container-fluid {
+	padding-right: 15px;
+    padding-left: 15px;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+.btn-group-vertical>.btn-group:after, .btn-group-vertical>.btn-group:before, .btn-toolbar:after, .btn-toolbar:before, .clearfix:after, .clearfix:before, .container-fluid:after, .container-fluid:before, .container:after, .container:before, .dl-horizontal dd:after, .dl-horizontal dd:before, .form-horizontal .form-group:after, .form-horizontal .form-group:before, .modal-footer:after, .modal-footer:before, .modal-header:after, .modal-header:before, .nav:after, .nav:before, .navbar-collapse:after, .navbar-collapse:before, .navbar-header:after, .navbar-header:before, .navbar:after, .navbar:before, .pager:after, .pager:before, .panel-body:after, .panel-body:before, .row:after, .row:before {
+    display: table;
+    content: " ";
+}
+
+.container-fluid>.navbar-collapse, .container-fluid>.navbar-header, .container>.navbar-collapse, .container>.navbar-header {
+    margin-right: 0;
+    margin-left: 0;
+}
+
+#authorise {
+	padding: 0px 0.5em;
+	margin-bottom: 5px;
+	margin-top: 5px;
+	a {
+			padding-left: 5px;
+			text-transform: uppercase;
+			font-weight: $font-weight-heading;
+			opacity: 0.7;
+			filter: alpha(opacity=70);
+			color: #239600;
+			&:hover {
+				opacity: 1;
+				filter: alpha(opacity=100);
+			}
+			&:hover, &:visited, &:link, &:active, &:focus {
+				text-decoration: none;
+			}
+		}
+}
+// -- User Elements -- //
+
+.btn-group-sm>.btn, .btn-sm {
+    padding: 5px 10px;
+    font-size: 12px;
+    line-height: 1.5;
+    border-radius: 3px;
+}
+
+.btn-primary {
+    color: #fff;
+    background-color: #337ab7;
+    border-color: #2e6da4;
+		opacity: 0.5;
+}
+
+.btn-success {
+    color: #fff;
+    background-color: #5cb85c;
+    border-color: #4cae4c;
+}
+
+.btn {
+    display: inline-block;
+    padding: 6px 12px;
+    margin-bottom: 0;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 1.42857143;
+    text-align: center;
+    white-space: nowrap;
+    vertical-align: middle;
+    -ms-touch-action: manipulation;
+    touch-action: manipulation;
+    cursor: pointer;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    background-image: none;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+button, html input[type=button], input[type=reset], input[type=submit] {
+    -webkit-appearance: button;
+    cursor: pointer;
+}
+button  {
+    text-transform: none;
+}
+button {
+    overflow: visible;
+}
+button {
+    margin: 0;
+    font: inherit;
+    color: inherit;
+	    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+}

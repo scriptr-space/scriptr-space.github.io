@@ -1,0 +1,16 @@
+/* == Fonts == */
+$font-heading:								"Roboto", sans-serif;
+$font-subheading:							"Roboto", sans-serif;
+$font-general:								"Roboto", sans-serif;
+$font-source:                 "Roboto Mono", "Anonymous Pro", "Space Mono", "Fira Mono", Inconsolata, monospace;
+$font-weight-heading:					700;
+$font-weight:									400;
+$font-spacing-heading:				0.1rem;
+
+/* == Colours == */
+$colour-background: 					#000000;
+$colour-navigator:            rgba(#871f52, 0.1); //lighten($colour-background, 10%);
+$colour-emphasis: 						#cccccc;
+$colour-foreground: 					darken($colour-emphasis, 10%);
+$colour-highlight: 						#27a532;
+$colour-debug: 								#888888;
