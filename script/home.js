@@ -63,33 +63,88 @@ $(function() {
 		
 	}
 
-	var save = function() { // -- Handle Save Script -- //
-
-		if (code && changed[code.file.id]) {
+	var save = function(all) { // -- Handle Save Script -- //
+		
+		if (nav && code) nav.busy(all ? code.script.id : code.file.id, "save");
+		
+		if (code) {
+			
+			var saving;
+			
+			code.script.files.forEach(function(file) {
 				
-				// -- Update the Script code to save with the changed value -- //
-				code.script.files[code.index].source = changed[code.file.id];
+				if ((all || code.file.id == file.id) && changed[file.id]) {
+					
+					// -- Update the Script code to save with the changed value -- //
+					if (!saving) saving = {};
+					saving[file.id] = file.source;
+					file.source = changed[file.id];
 				
-				// -- Do the save / patch -- //
+				}
+				
+			})
+			
+			// -- Do the save / patch -- //
+			if (saving) {
+				
 				gapi.client.request({
 					path: "/upload/drive/v3/files/" + code.script.id,
 					method: "PATCH",
 					params: {uploadType: "media"},
 					body: JSON.stringify({files: code.script.files}),
 				}).then(function() {
-					localforage.removeItem(code.file.id).then(function() {
-						delete changed[code.file.id];
-						if (nav) nav.change(code.file.id, "status-saved");
-					}).catch(function(err) {console.log("LOCAL_FORAGE ERROR", err);});
+					
+					Object.keys(saving).forEach(function(id) {
+						localforage.removeItem(id).then(function() {
+							delete changed[id];
+							if (nav) nav.change(id, "status-saved", 5000);
+						}).catch(function(err) {
+							if (debug) console.log("LOCAL_FORAGE ERROR", err);
+						});
+					});
+					
+					if (nav) nav.busy(all ? code.script.id : code.file.id);
+					
+				}, function(err) {
+					
+					if (debug) console.log("SAVING ERROR", err);
+					
+					// -- Roll back changes -- //
+					code.script.files.forEach(function(file) {
+						if (saving[file.id]) file.source = saving[file.id];
+					});
+					
+					if (nav) nav.busy(all ? code.script.id : code.file.id).error(err);
+					
 				});
+				
+			}
 			
 		}
 		
 	}
 
+	var clear = function() {
+		
+		// TODO: What if there are loaded instructions?
+		if (code) {
+			
+			// -- Clear Edited Code -- //
+			code = undefined;
+		
+			// -- Clear Editor too -- //
+			editor.clearValue();
+			
+			// -- Finally, clear path -- //
+			$("#path").empty();
+			
+		}
+		
+	}
+	
 	var diff = function() { // -- Handle Change Differences -- //
 		
-		console.log("DIFF");
+		if (debug) console.log("DIFF");
 		
 		if (code && changed[code.file.id]) {
 			
@@ -152,7 +207,7 @@ $(function() {
 			}).then(function() {
 				
 				// -- Enable Navigator, Interaction, Load Initial Help & Instructions Document -- //
-				nav = Navigator().initialise(_container, editor, status, loaded, debug);
+				nav = Navigator().initialise(_container, editor, status, loaded, clear, debug);
 				Interaction().initialise(
 					window, editor, nav, {"save" : save, "diff" : diff, "load" : loaded}, debug);
 			
@@ -190,7 +245,5 @@ $(function() {
 			
 	});
 	// -- Auth Handler -- //
-	
-	
 
 }); 

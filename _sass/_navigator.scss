@@ -14,11 +14,12 @@ div.navigator {
 	ul {
 		padding: 0;
 		margin: 1em;
-		font-size: 1.1rem;
+		font-size: $navigator-line;
 		li {
 			cursor: pointer;
 			list-style: none;
 			a {
+				margin-right: 0.5em;
 				cursor: pointer;
 				&:hover {
 					color: #77ff77;

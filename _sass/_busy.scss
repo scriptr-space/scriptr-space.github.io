@@ -1,0 +1,114 @@
+// -- Busy CSS -- //
+.busy {
+	display: inline-block;
+	padding: 0;
+	margin: -0.1em;
+	bottom: ($busy - $navigator-line) * 1.6;
+	width: $busy;
+	height: $busy;
+	position: relative;
+	border: 1px solid $colour-busy-line;
+	
+		animation: busy-outer $busy-timing infinite ease;
+		-o-animation: busy-outer $busy-timing infinite ease;
+		-ms-animation: busy-outer $busy-timing infinite ease;
+		-webkit-animation: busy-outer $busy-timing infinite ease;
+		-moz-animation: busy-outer $busy-timing infinite ease;
+	
+	> span {
+		&.load {background-color: $colour-load-fill;}
+		&.save {background-color: $colour-save-fill;}
+		vertical-align: top;
+		display: inline-block;
+		width: 100%;
+	
+			animation: busy-inner $busy-timing infinite ease-in;
+			-o-animation: busy-inner $busy-timing infinite ease-in;
+			-ms-animation: busy-inner $busy-timing infinite ease-in;
+			-webkit-animation: busy-inner $busy-timing infinite ease-in;
+			-moz-animation: busy-inner $busy-timing infinite ease-in;
+	
+	}
+}
+
+// -- Spinner (Outer) Animation Key-Frames -- //
+@keyframes busy-outer {
+	0% {transform: rotate(0deg);}
+	25% {transform: rotate(180deg);}
+	50% {transform: rotate(180deg);}
+	75% {transform: rotate(360deg);}
+	100% {transform: rotate(360deg);}
+}
+
+@-o-keyframes busy-outer {
+	0% {transform: rotate(0deg);}
+	25% {transform: rotate(180deg);}
+	50% {transform: rotate(180deg);}
+	75% {transform: rotate(360deg);}
+	100% {transform: rotate(360deg);}
+}
+
+@-ms-keyframes busy-outer {
+	0% {transform: rotate(0deg);}
+	25% {transform: rotate(180deg);}
+	50% {transform: rotate(180deg);}
+	75% {transform: rotate(360deg);}
+	100% {transform: rotate(360deg);}
+}
+
+@-webkit-keyframes busy-outer {
+	0% {transform: rotate(0deg);}
+	25% {transform: rotate(180deg);}
+	50% {transform: rotate(180deg);}
+	75% {transform: rotate(360deg);}
+	100% {transform: rotate(360deg);}
+}
+
+@-moz-keyframes busy-outer {
+	0% {transform: rotate(0deg);}
+	25% {transform: rotate(180deg);}
+	50% {transform: rotate(180deg);}
+	75% {transform: rotate(360deg);}
+	100% {transform: rotate(360deg);}
+}
+
+// -- Spinner (Inner) Animation Key-Frames -- //
+@keyframes busy-inner {
+	0% {height: 0%;}
+	25% {height: 0%;}
+	50% {height: 100%;}
+	75% {height: 100%;}
+	100% {height: 0%;}
+}
+
+@-o-keyframes busy-inner {
+	0% {height: 0%;}
+	25% {height: 0%;}
+	50% {height: 100%;}
+	75% {height: 100%;}
+	100% {height: 0%;}
+}
+
+@-ms-keyframes busy-inner {
+	0% {height: 0%;}
+	25% {height: 0%;}
+	50% {height: 100%;}
+	75% {height: 100%;}
+	100% {height: 0%;}
+}
+
+@-webkit-keyframes busy-inner {
+	0% {height: 0%;}
+	25% {height: 0%;}
+	50% {height: 100%;}
+	75% {height: 100%;}
+	100% {height: 0%;}
+}
+
+@-moz-keyframes busy-inner {
+	0% {height: 0%;}
+	25% {height: 0%;}
+	50% {height: 100%;}
+	75% {height: 100%;}
+	100% {height: 0%;}
+}

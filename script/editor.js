@@ -162,18 +162,21 @@ Editor = function() {
 				afterChange(_session.getValue());
 			}); // Enable Edit Triggers
 		},
+		
+		clearValue : function() {
+			this.setValue("", this.Modes.text);
+		},
 
 		changeFont : function() {
-			console.log("CHANGING FONT");
 			var _fonts = _element.css("font-family").split(","); // Get Fonts
 			_fonts.push(_fonts.shift()); // Cycle Fonts
-			if (_debug) console.log("FONT:", _fonts[_fonts.length - 1], " --> ", _fonts[0]); // Log Font
+			if (_debug) console.log("CHANGING FONT:", _fonts[_fonts.length - 1], " --> ", _fonts[0]); // Log Font
 			_element.css("font-family", _fonts.join(",")); // Set Fonts
 		},
 
 		changeTheme : function() {
 			_Themes.push(_Themes.shift()); // Cycle Themes
-			if (_debug) console.log("THEME:", _Themes[_Themes.length - 1].name, " --> ", _Themes[0].name); // Log Theme
+			if (_debug) console.log("CHANGING THEME:", _Themes[_Themes.length - 1].name, " --> ", _Themes[0].name); // Log Theme
 			_editor.setTheme(_Themes[0].value); // Set Theme
 		},
 
@@ -191,7 +194,7 @@ Editor = function() {
 				name: details,
 				bindKey: {win: winKeys,  mac: macKeys},
 				exec: function(editor) {func();},
-				readOnly: true
+				readOnly: true,
 			});
 		},
     // -- External Functions -- //

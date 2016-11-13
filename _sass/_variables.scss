@@ -14,3 +14,13 @@ $colour-emphasis: 						#cccccc;
 $colour-foreground: 					darken($colour-emphasis, 10%);
 $colour-highlight: 						#27a532;
 $colour-debug: 								#888888;
+$colour-busy-line:            #646464;
+$colour-load-fill:            #5b9e60;
+$colour-save-fill:            #ffaa00;
+
+/* == Sizes == */
+$navigator-line:              1.1rem;
+$busy:                        0.9rem;
+
+/* == Timings == */
+$busy-timing:                 2s;

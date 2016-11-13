@@ -10,7 +10,7 @@ Interaction = function() {
 	// -- Internal Enums -- //
 	var _help = {
 		instructions : {name : "General > Instructions", source : "README.md"},
-		license : {name : "General > License", source : "LICENSE.md"},
+		license : {name : "General > License", source : "LICENSING.md"},
 		shortcuts : {name : "General > Shortcuts", source : "SHORTCUTS.md"},
 		todo : {name : "General > ToDo", source : "TODO.md"},
 	};
@@ -38,35 +38,39 @@ Interaction = function() {
 			} else if (e.ctrlKey || e.metaKey) {
 				switch(e.which) {
 					case 221: // ] - Change Theme (Cycle)
-						_editor.changeTheme(); e.preventDefault(); break;
+						e.preventDefault(); _editor.changeTheme(); break;
 					case 219: // [ - Change Font (Cycle)
-						_editor.changeFont(); e.preventDefault(); break;
+						e.preventDefault(); _editor.changeFont(); break;
 					case 37: // Left Arrow - Pull Out Navigator
-						_navigator.show(); e.preventDefault(); break;
+						e.preventDefault(); _navigator.show(); break;
 					case 38: // Up Arrow - Go to Full Screen Mode
-						if (screenfull.enabled && !screenfull.isFullscreen) screenfull.request(); e.preventDefault(); break;
+						e.preventDefault();
+						if (screenfull.enabled && !screenfull.isFullscreen) screenfull.request();
+						break;
 					case 39: // Right Arrow - Push Away Navigator
-						_navigator.hide(); e.preventDefault(); break;
+						e.preventDefault(); _navigator.hide(); break;
 					case 40: // Down Arrow - Exit out of Full Screen Mode
-						if (screenfull.enabled && screenfull.isFullscreen) screenfull.exit(); break;
+						e.preventDefault();
+						if (screenfull.enabled && screenfull.isFullscreen) screenfull.exit();
+						break;
 					case 73: // I = Insert/Overwrite
-						_editor.toggleOverwrite(); e.preventDefault(); break;
+						e.preventDefault(); _editor.toggleOverwrite(); break;
 					case 83: // S - Save
-						_functions.save(); e.preventDefault(); break;
+						e.preventDefault(); _functions.save(e.shiftKey);  break;
 					case 77: // M - Diff
-						_functions.diff; e.preventDefault() ;break;
+						e.preventDefault(); _functions.diff; break;
 					default: return; // Exit Handler
 				}
 			} else if (e.altKey) {
 				switch(e.which) {
 					case 73: // I - Instructions
-						_show(_help.instructions); e.preventDefault(); break;
+						e.preventDefault(); _show(_help.instructions); break;
 					case 76: // L - License
-						_show(_help.license); e.preventDefault(); break;
+						e.preventDefault(); _show(_help.license); break;
 					case 83: // S - Shortcuts
-						_show(_help.shortcuts); e.preventDefault(); break;
+						e.preventDefault(); _show(_help.shortcuts); break;
 					case 84: // T - To-Do
-						_show(_help.todo); e.preventDefault(); break;
+						e.preventDefault(); _show(_help.todo); break;
 					default: return; // Exit Handler
 				}
 			}
@@ -91,8 +95,10 @@ Interaction = function() {
 		// -- Action Editor Shortcuts -- //
 		_editor.addCommand("Toggle Insert/Overwrite", "Ctrl-I", "Command-I", _editor.toggleOverwrite);
 
-		_editor.addCommand("Save Script", "Ctrl-S", "Command-S", _functions.save);
-
+		_editor.addCommand("Save File", "Ctrl-S", "Command-S", function() {_functions.save()});
+		_editor.addCommand("Save Entire Script", "Ctrl-Shift-S", "Command-Shift-S",
+			 function() {_functions.save(true)});
+		
 		_editor.addCommand("Diff Script", "Ctrl-M", "Command-M", _functions.diff);
 
 		_editor.addCommand("Change Font", "Ctrl-[", "Command-[", _editor.changeFont);

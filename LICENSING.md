@@ -1,6 +1,6 @@
 
-LICENSE
-=======
+LICENSING
+=========
 __&copy; 2016 Scriptr.space__
 
 Unless otherwise stated in the code, the operational plumbing of the site (code, HTML, CSS etc.) are made available under a [GNU GPL v3 licence][2], so you are free to redistribute it under the same terms but this means there is _absolute no warranty_.
