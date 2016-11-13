@@ -161,10 +161,12 @@ Editor = function() {
 			if (afterChange) _session.on("change", function(e) {
 				afterChange(_session.getValue());
 			}); // Enable Edit Triggers
+			return this; // -- Return for Chaining -- //
 		},
 		
 		clearValue : function() {
 			this.setValue("", this.Modes.text);
+			return this; // -- Return for Chaining -- //
 		},
 
 		changeFont : function() {
@@ -172,21 +174,35 @@ Editor = function() {
 			_fonts.push(_fonts.shift()); // Cycle Fonts
 			if (_debug) console.log("CHANGING FONT:", _fonts[_fonts.length - 1], " --> ", _fonts[0]); // Log Font
 			_element.css("font-family", _fonts.join(",")); // Set Fonts
+			return this; // -- Return for Chaining -- //
 		},
 
 		changeTheme : function() {
 			_Themes.push(_Themes.shift()); // Cycle Themes
 			if (_debug) console.log("CHANGING THEME:", _Themes[_Themes.length - 1].name, " --> ", _Themes[0].name); // Log Theme
 			_editor.setTheme(_Themes[0].value); // Set Theme
+			return this; // -- Return for Chaining -- //
 		},
 
 		changeWidth : function(width) {
 			_element.css("width", width);
 			_editor.resize();
+			return this; // -- Return for Chaining -- //
 		},
 		
 		toggleOverwrite : function() {
 			_editor.setOverwrite(!_editor().getOverwrite());
+			return this; // -- Return for Chaining -- //
+		},
+		
+		protect : function() {
+			_editor.setReadOnly(true);
+			return this; // -- Return for Chaining -- //
+		},
+		
+		unprotect : function() {
+			_editor.setReadOnly(false);
+			return this; // -- Return for Chaining -- //
 		},
 		
 		addCommand : function(details, winKeys, macKeys, func) {
@@ -196,6 +212,7 @@ Editor = function() {
 				exec: function(editor) {func();},
 				readOnly: true,
 			});
+			return this; // -- Return for Chaining -- //
 		},
     // -- External Functions -- //
 		

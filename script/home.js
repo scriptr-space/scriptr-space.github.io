@@ -1,5 +1,5 @@
 // -- Global Editor Variables -- //
-var debug, code, editor, nav;
+var debug, code, previous, editor, nav;
 var hash = new Hashes.MD5(), changed = {}, saved = {};
 // -- Global Variables -- //
 
@@ -43,21 +43,29 @@ $(function() {
 	var loaded = function(name, value, script, file, files, index) { // -- Handles a loaded file/script -- //
 					
 		$("#path").empty().append($("<span />", {text: name}));
+		previous = undefined;
 		
 		if (script && file) {
 			
-			code = {hash : hash.hex(value), value : value, index : index, file : file, script : script};
+			code = {
+				hash : hash.hex(value),
+				value : value,
+				index : index,
+				file : file,
+				script : script,
+				mode : file.type == "html" ? editor.Modes.html : file.type == "server_js" ? 
+											editor.Modes.gas : editor.Modes.text
+			};
 			code.script.files = files;
 			value = file.id in changed && 
 					hash.hex(changed[file.id]) != hash.hex(value) ? changed[file.id] : value;
 			
-			editor.setValue(value, file.type == "html" ? 
-					editor.Modes.html : file.type == "server_js" ? editor.Modes.gas : editor.Modes.text, change);
+			editor.setValue(value, code.mode, change).unprotect(); // Set it to read-write
 			
 		} else {
 			
 			code = undefined;
-			editor.setValue(value, editor.Modes.markdown, undefined);
+			editor.setValue(value, editor.Modes.markdown, undefined).protect(); // Set it to read-only
 			
 		}
 		
@@ -70,6 +78,7 @@ $(function() {
 		if (code) {
 			
 			var saving;
+			previous = undefined;
 			
 			code.script.files.forEach(function(file) {
 				
@@ -144,20 +153,58 @@ $(function() {
 	
 	var diff = function() { // -- Handle Change Differences -- //
 		
-		if (debug) console.log("DIFF");
-		
-		if (code && changed[code.file.id]) {
+		if (previous) {
+			
+			// -- Restore Previos Code -- //
+			code = previous.code;
+			
+			// -- Display it -- //
+			editor.setValue(previous.value, previous.code.mode, change).unprotect(); // Set it to read-write
+			
+			// -- Finally, update path -- //
+			$("#path span").text(previous.path);
+			
+			// -- Clear Previous -- //
+			previous = undefined;
+			
+		} else if (code && changed[code.file.id]) {
 			
 			if (hash.hex(changed[code.file.id]) != hash.hex(code.value)) {
 				
-				var _diff = JsDiff.diffLines(code.value, changed[code.file.id], {newlineIsToken: true});
-				var _diff_View = "";
+				var _diff = JsDiff.diffLines(code.value, changed[code.file.id],
+																		 {newlineIsToken: true}), _diff_View = "";
 				
-				_diff.forEach(function(part) {
-					if (part.value) _diff_View += ((part.added ? "+" : part.removed ? "-" : "") + part.value);
+				if (debug) console.log("CALCULATED DIFF", _diff);
+				
+				_diff.forEach(function(part, i, parts) {
+					if (part.added || part.removed) {
+						part.value.split(/\r\n|\r|\n/).forEach(function(line, j, lines) {
+							console.log("LINES", lines);
+							if (line || j > 0) {
+								_diff_View += (part.added ? "+" : "-") + line +
+									(i + 1 == parts.length && j + 1 == lines.length ? "" : "\n");
+							} else if (j === 0 && lines.length == 2 && lines[j+1] === "") {
+							} else {
+								_diff_View += "\n";
+							}
+						})
+					} else {
+						_diff_View += part.value;
+					}
 				});
 				
-				editor.setValue(_diff_View, editor.Modes.diff);
+				// -- Set the Previous (to un-diff) -- //
+				previous = {
+					code : code,
+					value : editor.getValue(),
+					path : $("#path span").text(),
+				};
+				
+				code = undefined;
+				editor.setValue(_diff_View, editor.Modes.diff, undefined).protect(); // Set it to read-only
+			
+				// -- Finally, update path -- //
+				$("#path span").text(previous.path + " [DIFF]");
 				
 			}
 			

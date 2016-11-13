@@ -15,7 +15,7 @@ Keyboard Actions
 * Push away Navigator                     ==>     __[CTRL | ⌘] + Right || Swipe Right__
 * Go Full Screen                          ==>     __[CTRL | ⌘] + Up || Pinch Out__
 * Exit Full Screen                        ==>     __[CTRL | ⌘] + Down || Pinch In__
-* Save File / Entire Script               ==>     __[CTRL / SHIFT CTRL | ⌘ / SHIFT ⌘] + S__
+* Save (Entire) Script / File             ==>     __(SHIFT) + [CTRL | ⌘] + S__
 * Diff Local / Saved Script               ==>     __[CTRL | ⌘] + M__
 * Commit to Github                        ==>     __[CTRL | ⌘] + G__
 * Grab from Github                        ==>     __[SHIFT CTRL | SHIFT ⌘] + G__

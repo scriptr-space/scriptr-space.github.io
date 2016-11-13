@@ -34,7 +34,7 @@ Interaction = function() {
 		// == Add Keyboard Shortcuts to Window == //
 		_surface.keydown(function(e) {
 			if (e.altKey && e.ctrlKey) {
-				return;	
+				return;
 			} else if (e.ctrlKey || e.metaKey) {
 				switch(e.which) {
 					case 221: // ] - Change Theme (Cycle)
@@ -58,7 +58,7 @@ Interaction = function() {
 					case 83: // S - Save
 						e.preventDefault(); _functions.save(e.shiftKey);  break;
 					case 77: // M - Diff
-						e.preventDefault(); _functions.diff; break;
+						e.preventDefault(); _functions.diff(); break;
 					default: return; // Exit Handler
 				}
 			} else if (e.altKey) {
