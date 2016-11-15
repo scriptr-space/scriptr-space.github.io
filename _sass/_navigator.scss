@@ -28,6 +28,18 @@ div.navigator {
 					color: #aaaaff;
 				}	
 			}
+			a.status-added {
+				color: #66ff33;
+				&:after {content: " ⚡";}
+			}
+			a.status-deleted {
+				color: #666; // 
+				&:after {content: " ✞";}
+			}
+			a.status-condemned {
+				color: #b30000;
+				&:after {content: " ✖";}
+			}
 			a.status-saved {
 				color: #7ca36e;
 				&:after {content: " ✔";}

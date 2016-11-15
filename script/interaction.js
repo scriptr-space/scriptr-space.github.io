@@ -13,6 +13,7 @@ Interaction = function() {
 		license : {name : "General > License", source : "LICENSING.md"},
 		shortcuts : {name : "General > Shortcuts", source : "SHORTCUTS.md"},
 		todo : {name : "General > ToDo", source : "TODO.md"},
+		details : {name : "General > Detailed Instructions", source : "DETAILS.md"},
 	};
 	// -- Internal Enums -- //
 	
@@ -37,10 +38,22 @@ Interaction = function() {
 				return;
 			} else if (e.ctrlKey || e.metaKey) {
 				switch(e.which) {
-					case 221: // ] - Change Theme (Cycle)
-						e.preventDefault(); _editor.changeTheme(); break;
-					case 219: // [ - Change Font (Cycle)
-						e.preventDefault(); _editor.changeFont(); break;
+					case 221: // ] - Change Theme/Font (Cycle Forwards)
+						e.preventDefault();
+						if (e.shiftKey) { // Shift Pressed, so change Font instead
+							_editor.changeFont(false);
+						} else { // Change There
+							_editor.changeTheme(false);
+						}
+						break;
+					case 219: // [ - Change Theme/Font (Cycle Backwards)
+						e.preventDefault();
+						if (e.shiftKey) { // Shift Pressed, so change Font instead
+							_editor.changeFont(true);
+						} else { // Change There
+							_editor.changeTheme(true);
+						}
+						break;
 					case 37: // Left Arrow - Pull Out Navigator
 						e.preventDefault(); _navigator.show(); break;
 					case 38: // Up Arrow - Go to Full Screen Mode
@@ -53,16 +66,22 @@ Interaction = function() {
 						e.preventDefault();
 						if (screenfull.enabled && screenfull.isFullscreen) screenfull.exit();
 						break;
+					case 66: // B = Add File to Script
+						e.preventDefault(); _functions.create(); break;
 					case 73: // I = Insert/Overwrite
 						e.preventDefault(); _editor.toggleOverwrite(); break;
 					case 83: // S - Save
 						e.preventDefault(); _functions.save(e.shiftKey);  break;
 					case 77: // M - Diff
 						e.preventDefault(); _functions.diff(); break;
+					case 81: // Q - Remove File from Script
+						e.preventDefault(); _functions.remove(); break;
 					default: return; // Exit Handler
 				}
 			} else if (e.altKey) {
 				switch(e.which) {
+					case 68: // D - Details
+						e.preventDefault(); _show(_help.details); break;
 					case 73: // I - Instructions
 						e.preventDefault(); _show(_help.instructions); break;
 					case 76: // L - License
@@ -101,9 +120,42 @@ Interaction = function() {
 		
 		_editor.addCommand("Diff Script", "Ctrl-M", "Command-M", _functions.diff);
 
-		_editor.addCommand("Change Font", "Ctrl-[", "Command-[", _editor.changeFont);
-
-		_editor.addCommand("Change Theme", "Ctrl-]", "Command-]", _editor.changeTheme);
+		_editor.addCommand("Change Font", "Ctrl-Shift-[", "Command-Shift-[", function() {
+			_editor.changeFont(true); // Change Font (Reverse)
+		});
+		_editor.addCommand("Change Font", "Ctrl-Shift-]", "Command-Shift-]", function() {
+			_editor.changeFont(false); // Change Font (Forwards)
+		});
+		
+		_editor.addCommand("Change Theme", "Ctrl-]", "Command-]", function() {
+			_editor.changeTheme(true); // Change Theme (Reverse)
+		});
+		_editor.addCommand("Change Theme", "Ctrl-[", "Command-]", function() {
+			_editor.changeTheme(false); // Change Theme (Forwards)
+		});
+		
+		_editor.addCommand("Create File in Script", "Ctrl-B", "Command-B", function() {
+			_functions.create();
+		});
+		
+		_editor.addCommand("Remove File from Script", "Ctrl-Q", "Command-B", function() {
+			_functions.remove();
+		});
+		
+		_editor.addCommand("Commit to Github", "Ctrl-G", "Command-G", function() {
+			var o = hello("github");
+			o.login({force: false, scope: "basic, gist, repo"}).then(function(a) {
+				console.log("GITHUB LOGIN", a);
+				var gh = new GitHub({
+  				token: a.authResponse.access_token
+				});
+				const me = gh.getUser();
+				me.listRepos().then(
+					function(r) {console.log("GITHUB REPOS", r)}, 
+					function(err) {console.log("GITHUB REPO ERROR", err)}
+				);
+			}, function(err) {console.log("GITHUB LOGIN ERROR", err)})
+		});
 		// -- Action Editor Shortcuts -- //
 
 		// -- Further Show Editor Shortcuts -- //
@@ -113,7 +165,9 @@ Interaction = function() {
 
 		_editor.addCommand("Show Shortcuts", "Alt-S", "Alt-S", function() {_show(_help.shortcuts)});
 
-		_editor.addCommand("Show To-Do", "Alt-T", "Alt-T", function() {_show(_help.todo)});	
+		_editor.addCommand("Show To-Do", "Alt-T", "Alt-T", function() {_show(_help.todo)});
+		
+		_editor.addCommand("Show Detailed Instructions", "Alt-D", "Alt-D", function() {_show(_help.details)});
 		// -- Further Show Editor Shortcuts -- //
 
 	}

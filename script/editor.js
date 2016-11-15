@@ -169,16 +169,24 @@ Editor = function() {
 			return this; // -- Return for Chaining -- //
 		},
 
-		changeFont : function() {
+		changeFont : function(reverse) {
 			var _fonts = _element.css("font-family").split(","); // Get Fonts
-			_fonts.push(_fonts.shift()); // Cycle Fonts
+			if (reverse) {
+				_fonts.unshift(_fonts.pop()) // Cycle Fonts (reverse)
+			} else {
+				_fonts.push(_fonts.shift()); // Cycle Fonts (forwards)
+			}
 			if (_debug) console.log("CHANGING FONT:", _fonts[_fonts.length - 1], " --> ", _fonts[0]); // Log Font
 			_element.css("font-family", _fonts.join(",")); // Set Fonts
 			return this; // -- Return for Chaining -- //
 		},
 
-		changeTheme : function() {
-			_Themes.push(_Themes.shift()); // Cycle Themes
+		changeTheme : function(reverse) {
+			if (reverse) {
+				_Themes.unshift(_Themes.pop()) // Cycle Themes (reverse)
+			} else {
+				_Themes.push(_Themes.shift()); // Cycle Themes (forwards)
+			}
 			if (_debug) console.log("CHANGING THEME:", _Themes[_Themes.length - 1].name, " --> ", _Themes[0].name); // Log Theme
 			_editor.setTheme(_Themes[0].value); // Set Theme
 			return this; // -- Return for Chaining -- //

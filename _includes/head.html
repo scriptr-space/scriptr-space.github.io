@@ -16,9 +16,6 @@
 			{% endif %}
 		</title>
 
-		<!-- Latest compiled and minified Bootstrap CSS -->
-		<!-- <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous"> --.
-		
 		<!-- CSS -->
 		<style type="text/css">{% capture include_to_scssify %}{% include style.scss %}{% endcapture %}{{ include_to_scssify | scssify }}</style>
 		
@@ -154,10 +151,11 @@
 		<!-- Cloudflare hosted URL Parser -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-url-parser/2.3.1/purl.min.js"></script>
 		
+		<!-- Cloudflare hosted Hello.js -->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/hellojs/1.14.0/hello.all.min.js"></script>
+		
 		<!-- Cloudflare hosted Github-API -->
-		<!--
-		<script src="https://cdnjs.cloudflare.com/ajax/libs/github-api/2.3.0/GitHub.min.js"></script>
-		-->
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/github-api/2.3.0/GitHub.bundle.min.js"></script>
 		
 		<!-- Cloudflare hosted UUID Generator -->
 		<script src="https://cdnjs.cloudflare.com/ajax/libs/node-uuid/1.4.7/uuid.min.js"></script>

@@ -84,27 +84,36 @@ Navigator = function() {
 									response.result.files.forEach(function(file, index, files) {
 
 										// -- Get the line count for the source file -- //
-										var _count = file.source.split(/\r\n|\r|\n/).length;
-
+										var _count = file.source.split(/\r\n|\r|\n/).length, _name = file.name;
+										
 										$("<li />", {
 											id: file.id,
 										}).appendTo(_list).append($("<a />", 
 											{
 												class : _status(file.id),
-												text: file.name + (file.type == "html" ? ".html" : ".gs"),
+												text: _name + (_name == ".git" ? "" : (file.type == "html" ? ".html" : ".gs")),
 												title: _count ? _count + (_count > 1 ? " lines" : " line") : "",
-											}).click(function() {
+											}).click(function(e) {
 
-													// -- Handle Visuals -- //
-													_navigator.find("a").removeClass("current");
-													$(this).addClass("current");
+													if (e.ctrlKey) {
+														
+														// -- Rename File in Script -- //
+														
+													} else {
+													
+														// -- Handle Visuals -- //
+														_navigator.find("a").removeClass("current");
+														$(this).addClass("current");
 
-													// -- Handle OnLoad -- //
-													if (_onLoad)  _onLoad(script.name + " > " + file.name, 
-																								file.source, script, file, files, index);
+														// -- Handle OnLoad -- //
+														if (_onLoad)  _onLoad(script.name + " > " + file.name, 
+																									file.source, script, file, files, index);
 
-												}
-										));
+													}
+											
+													
+											})
+										);
 
 										_lineTotal += _count;
 
@@ -139,7 +148,7 @@ Navigator = function() {
 		if (response.files && response.files.length > 0) _appendFiles(response.files);
 		if (response.nextPageToken) {
 			var request = gapi.client.drive.files.list({
-				q: "mimeType = 'application/vnd.google-apps.script'",
+				q: "mimeType = 'application/vnd.google-apps.script' and trashed = false",
 				orderBy: "modifiedByMeTime desc,name",
 				fields: "files(description,id,modifiedByMeTime,name,version)",
 				pageToken: response.nextPageToken,
@@ -171,7 +180,7 @@ Navigator = function() {
 			// -- Load Scripts from Google Drive -- //
 			gapi.client.load("drive", "v3", function() {
 				var request = gapi.client.drive.files.list({
-					q: "mimeType = 'application/vnd.google-apps.script'",
+					q: "mimeType = 'application/vnd.google-apps.script' and trashed = false",
 					orderBy: "modifiedByMeTime desc,name",
 					fields: "files(description,id,modifiedByMeTime,name,version)",
 				}).then(function(response) {
@@ -215,6 +224,10 @@ Navigator = function() {
         }
     	}(status));
 		},
+		
+		is : function(id, status) {
+			return $("li#" + id + " a").hasClass(status);
+		}
 		
     // -- External Functions -- //
   };

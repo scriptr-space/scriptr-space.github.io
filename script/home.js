@@ -11,6 +11,17 @@ $(function() {
 	// -- Set Up LocalForage -- //
 	localforage.config({name: "Scriptr-Space"});
 	
+	// -- Set Up Hello.js -- //
+	hello.init(
+		{
+			github : "770cdacd6fa33a1a269d",
+		},
+		{
+			redirect_uri : "redirect",
+			oauth_proxy : 'https://auth-server.herokuapp.com/proxy'
+		}
+	);
+	
 	// == Functions == //
 	var status = function(id) { // -- Handle Changes to Edited Document -- //
 		if (id in saved) {
@@ -71,6 +82,22 @@ $(function() {
 		
 	}
 
+	var create = function() { // -- Handle Create File in Script -- //
+		if (nav && code && code.file) {
+			nav.change(code.file.id, "status-added", 10000);
+		}
+	}
+	
+	var remove = function() { // -- Handle Remove File in Script -- //
+		if (nav && code && code.file) {
+			if (nav.is(code.file.id, "status-condemned")) {
+				nav.change(code.file.id, "status-deleted");
+			} else {
+				nav.change(code.file.id, "status-condemned", 2000);
+			}
+		}
+	}
+	
 	var save = function(all) { // -- Handle Save Script -- //
 		
 		if (nav && code) nav.busy(all ? code.script.id : code.file.id, "save");
@@ -256,7 +283,8 @@ $(function() {
 				// -- Enable Navigator, Interaction, Load Initial Help & Instructions Document -- //
 				nav = Navigator().initialise(_container, editor, status, loaded, clear, debug);
 				Interaction().initialise(
-					window, editor, nav, {"save" : save, "diff" : diff, "load" : loaded}, debug);
+					window, editor, nav, {"save" : save, "diff" : diff, "load" : loaded,
+																"remove" : remove, "create" : create}, debug);
 			
 			}).catch(function(err) {if (debug) console.log("LOCAL_FORAGE ERROR:", err);});
 

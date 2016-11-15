@@ -1,7 +1,7 @@
 // -- Set Up API Google Scopes & IDs -- //
 var API_KEY = "AIzaSyAbe5GtlLj0VZWSvC8golSFEZY7eHiYHlQ";
 var API_CLIENT_ID = "906733969647-tsscu15blfumt6v8i79663stk8ggdn3t.apps.googleusercontent.com";
-var API_SCOPES = "profile email https://www.googleapis.com/auth/drive.scripts https://www.googleapis.com/auth/userinfo.email";
+var API_SCOPES = "profile email https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/drive.scripts https://www.googleapis.com/auth/drive";
 // -- Set Up API Google Scopes & IDs -- //
 
 // -- Authorisation Methods -- //
