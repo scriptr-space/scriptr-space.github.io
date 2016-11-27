@@ -223,7 +223,7 @@ Editor = function() {
 			_editor.setOption("enableEmmet", _mode.mode == "ace/mode/html");
 			
 			// -- Got to original spot -- //
-			if (_row || _col) _editor.selection.moveTo(_row, _col);
+			if (_row || _col) _editor.gotoLine(_row + 1, _col, true);
 			
 			return this; // -- Return for Chaining -- //
 		},
