@@ -1,12 +1,13 @@
 // -- Global Editor Variables -- //
-var debug, code, previous, editor, nav;
-var hash = new Hashes.MD5(), changed = {}, saved = {};
+var debug, code, previous, editor, nav, _;
+var hash = new Hashes.MD5(), shash = new Hashes.SHA1(), changed = {}, saved = {}, deleted = {};
 // -- Global Variables -- //
 
 $(function() {
 
 	// -- Get Debug -- //
 	debug = ($.url().param("debug") === "" || $.url().fparam("debug") === "");
+	dev = ($.url().attr("host").split(".")[0] == "dev");
 	
 	// -- Set Up LocalForage -- //
 	localforage.config({name: "Scriptr-Space"});
@@ -14,9 +15,8 @@ $(function() {
 	// -- Set Up Hello.js -- //
 	hello.init(
 		{
-			github : "770cdacd6fa33a1a269d",
-		},
-		{
+			github : dev ? "0e6afe63555ffc47107b" : "770cdacd6fa33a1a269d",
+		},{
 			redirect_uri : "redirect",
 			oauth_proxy : 'https://auth-server.herokuapp.com/proxy'
 		}
@@ -33,7 +33,17 @@ $(function() {
 		}
 	}
 	
+	var force = function(file) {
+		if (file) {
+			localforage.setItem(file.id, file.source).then(function (value) {
+				changed[file.id] = value;
+				if (nav) nav.change(file.id, "status-changed");
+			}).catch(function(err) {if (debug) console.log("LOCAL_FORAGE ERROR", err);});		
+		}
+	}
+	
 	var change = function(value) { // -- Handle Changes to Edited Document -- //
+		
 		if (code && code.hash != hash.hex(value)) {
 			
 			localforage.setItem(code.file.id, value).then(function (value) {
@@ -49,58 +59,167 @@ $(function() {
 			}).catch(function(err) {if (debug) console.log("LOCAL_FORAGE ERROR", err);});
 			
 		}
+		
 	}
 	
-	var loaded = function(name, value, script, file, files, index) { // -- Handles a loaded file/script -- //
-					
+	var loaded = function(name, value, script, file, files, index, interaction, editable) { // -- Handles a loaded file/script -- //
+		
 		$("#path").empty().append($("<span />", {text: name}));
 		previous = undefined;
 		
-		if (script && file) {
+		if (interaction) {
 			
+			if (editable) {
+				editor.setValue(value, editor.Modes.interact, undefined).unprotect().focus(); // Set it to read-only
+			} else {
+				editor.setValue(value, editor.Modes.interact, undefined).protect().focus(); // Set it to read-only	
+			}
+			
+		} else if (script && file) {
+			
+			// Instantiate the code object
 			code = {
 				hash : hash.hex(value),
 				value : value,
 				index : index,
 				file : file,
 				script : script,
-				mode : file.type == "html" ? editor.Modes.html : file.type == "server_js" ? 
-											editor.Modes.gas : editor.Modes.text
+				git : function() {
+					return this.script.files.find(function(f) {return (f.name == ".git")})
+				},
 			};
-			code.script.files = files;
+			
+			// Allow for pseudo-extensions when building web-apps
+			if (file.name == ".git") {
+				code.mode = editor.Modes.yaml;
+			} else if (file.name.endsWith(".js")) {
+				code.mode = editor.Modes.gas_html_js; // Need to ignore open/close script tags
+			} else if (file.name.endsWith(".css")) {
+				code.mode = editor.Modes.gas_html_css // Need to ignore open/close style tags
+			} else {
+				code.mode = file.type == "html" ? editor.Modes.html : file.type == "server_js" ? 
+									editor.Modes.gas : editor.Modes.text;
+			}
+			code.script.files = files.filter(
+				function(file) {return !(file.id in deleted);}
+			);
+			
 			value = file.id in changed && 
 					hash.hex(changed[file.id]) != hash.hex(value) ? changed[file.id] : value;
 			
-			editor.setValue(value, code.mode, change).unprotect(); // Set it to read-write
+			editor.setValue(value, code.mode, change).unprotect().focus(); // Set it to read-write
 			
 		} else {
 			
 			code = undefined;
-			editor.setValue(value, editor.Modes.markdown, undefined).protect(); // Set it to read-only
+			editor.setValue(value, editor.Modes.markdown, undefined).protect().focus(); // Set it to read-only
 			
 		}
 		
 	}
 
-	var create = function() { // -- Handle Create File in Script -- //
-		if (nav && code && code.file) {
-			nav.change(code.file.id, "status-added", 10000);
+	var create = function(html_type) { // -- Handle Create File in Script -- //
+		
+		if (code) {
+			
+			nav.busy(code.script.id, "create");
+			
+			code.script.files.push({
+				name : "Code_" + uuid.v4().substr(32),
+				source : "var foo = function(bar) {};",
+				type : html_type ? "html": "server_js",
+			});
+			
+			gapi.client.request({
+					path: "/upload/drive/v3/files/" + code.script.id,
+					method: "PATCH",
+					params: {uploadType: "media"},
+					body: JSON.stringify({files: code.script.files}),
+				}).then(function() {
+					
+					nav.busy(code.script.id).reload(code.script, code.script.files[code.script.files.length - 1].name);
+				
+				}, function(err) {
+					
+					if (debug) console.log("SAVING ERROR", err);
+					
+					nav.busy(code.script.id).error(code.script.id, err);
+					
+			});
+			
 		}
+	
 	}
 	
 	var remove = function() { // -- Handle Remove File in Script -- //
+		
 		if (nav && code && code.file) {
+			
 			if (nav.is(code.file.id, "status-condemned")) {
-				nav.change(code.file.id, "status-deleted");
+				
+				nav.change(code.file.id).busy(code.file.id, "delete");
+				
+				code.script.files = code.script.files.filter(
+					function(file) {return file.id !== code.file.id;}
+				);
+				
+				gapi.client.request({
+					path: "/upload/drive/v3/files/" + code.script.id,
+					method: "PATCH",
+					params: {uploadType: "media"},
+					body: JSON.stringify({files: code.script.files}),
+				}).then(function() {
+					
+					localforage.removeItem(code.file.id).then(function() {
+						
+						delete changed[code.file.id];
+						deleted[code.file.id] = true;
+						nav.busy(code.file.id).change(code.file.id, "status-deleted", 4000, true).select(code.script, code.index);
+						
+					}).catch(function(err) {
+						if (debug) console.log("LOCAL_FORAGE ERROR", err);
+						nav.busy(code.file.id).error(code.file.id, err);
+					});
+					
+				}, function(err) {
+					
+					if (debug) console.log("DELETING ERROR", err);
+					nav.busy(code.file.id).error(code.file.id, err);
+					
+				});
+				
 			} else {
+				
 				nav.change(code.file.id, "status-condemned", 2000);
+				
+			}
+		}
+	}
+	
+	var abandon = function() { // -- Handle Abandon Local Changes to a File in Script -- //
+		
+		if (nav && code && code.file && changed[code.file.id]) {
+			
+			if (nav.is(code.file.id, "status-imperilled")) {
+				
+				localforage.removeItem(code.file.id).then(function() {
+						delete changed[code.file.id];
+						nav.change(code.file.id, "status-abandoned", 2000);
+						editor.setValue(code.file.source, code.mode, change).unprotect();
+					}).catch(function(err) {
+						if (debug) console.log("LOCAL_FORAGE ERROR", err);
+						nav.error(code.file.id, err);
+					});
+				
+			} else {
+				
+				nav.change(code.file.id, "status-imperilled", 2000);
+				
 			}
 		}
 	}
 	
 	var save = function(all) { // -- Handle Save Script -- //
-		
-		if (nav && code) nav.busy(all ? code.script.id : code.file.id, "save");
 		
 		if (code) {
 			
@@ -114,6 +233,11 @@ $(function() {
 					// -- Update the Script code to save with the changed value -- //
 					if (!saving) saving = {};
 					saving[file.id] = file.source;
+					
+					// Remove Meta / Git
+					if (file.meta) delete file.meta;
+					if (file.git) delete file.git;
+					
 					file.source = changed[file.id];
 				
 				}
@@ -122,6 +246,8 @@ $(function() {
 			
 			// -- Do the save / patch -- //
 			if (saving) {
+				
+				if (nav && code) nav.busy(all ? code.script.id : code.file.id, "save");
 				
 				gapi.client.request({
 					path: "/upload/drive/v3/files/" + code.script.id,
@@ -150,7 +276,8 @@ $(function() {
 						if (saving[file.id]) file.source = saving[file.id];
 					});
 					
-					if (nav) nav.busy(all ? code.script.id : code.file.id).error(err);
+					if (nav) nav.busy(all ? code.script.id : code.file.id)
+						.error(all ? code.script.id : code.file.id, err);
 					
 				});
 				
@@ -160,6 +287,531 @@ $(function() {
 		
 	}
 
+	var repository = function(repo, meta) {
+		
+		meta.instructions += "\n\n";
+		meta.line += 2;
+		
+		var _owner = repo.owner.login;
+		meta.instructions += ("*\t" + (repo.selected ? "[x]" : (repo.permissions.push ? "[ ]" : "[o]")) + "\t" + repo.name + (_owner ? " (" + _owner + ")" : ""));
+		
+		meta.lines["Line_" + meta.line] = repo.fullName;
+								
+		if (repo.description) {
+			meta.instructions += ("\n\t\t"+ repo.description);
+			meta.line += 1;
+			meta.lines["Line_" + meta.line] = repo.fullName;
+		}
+
+		return meta;
+	}
+	
+	var repositories = function(instructions, code, response, selected) {
+
+		instructions = instructions.replace(new RegExp(RegExp.escape("{{DETAILS}}"), "g"),
+			selected ? "You have currently selected repo: __" + selected.fullName + "__" : "You haven't yet selected any repos.");
+		
+		var meta = {line: instructions.split(/\r\n|\r|\n/).length - 1, lines : {}, instructions : instructions};
+		
+		var all_Repos = []; // Hold all repositories for selection.
+		
+		var _continue = function() {
+			editor.addCommand("Select Repo", "Space", "Space", (function(code, repos) {
+				return function(ed) {
+
+					if (repos) {
+
+						var selected_Row = ed.selection.lead.row, _selected_Repo;
+						if (meta.lines["Line_" + selected_Row]) {
+							if (debug) console.log("SELECTED REPO:", meta.lines["Line_" + selected_Row]);
+							for (var i = 0; i < repos.length; i++) {
+								if (repos[i].fullName == meta.lines["Line_" + selected_Row] && repos[i].permissions.push) {
+									
+									repos[i].selected = !repos[i].selected;
+									_selected_Repo = repos[i];
+
+									editor.addCommand("Commit Repo", "Ctrl-Enter", "Ctrl-Enter", (function(repo, code) {
+										return function(ed) {
+											if (repo) {
+												if (debug) console.log("CONFIRMED REPO:", repo);
+												editor.removeCommand("Select Repo").removeCommand("Commit Repo");
+
+												var now = new Date().toISOString();
+												var git = {
+													repo : {
+														owner : repo.owner.login,
+														name : repo.name,
+													},
+													created : now,
+													type : "COMMIT",
+													exclude : [
+														{name : ".git", description : ""},
+													],
+													exceptions : [
+														{
+															id : uuid.v4() + " | GOOGLE DRIVE ID OF SCRIPT+FILE",
+															name : uuid.v4().substr(0,8) + ".gs | ID will be preferred over NAME (if available)",
+															description : "Random Example File",
+															repo : {
+																owner : repo.owner.login + " | OR ANOTHER",
+																name : repo.name + " | OR ANOTHER",
+															},
+															type : "COMMIT | CLONE",
+														}
+													],
+													last : {},
+													log : [
+														{name : "Configured", when : now,}
+													],
+												};
+
+												// == Create .git file and configure ==
+												code.script.files.push({
+													name : ".git",
+													source : jsyaml.safeDump(git),
+													type : "html",
+												});
+
+												gapi.client.request({
+														path: "/upload/drive/v3/files/" + code.script.id,
+														method: "PATCH",
+														params: {uploadType: "media"},
+														body: JSON.stringify({files: code.script.files}),
+													}).then(function() {
+
+														nav.reload(code.script);
+
+													}, function(err) {
+
+														if (debug) console.log("SAVING ERROR", err);
+
+												});
+
+											}
+										};
+
+									})(_selected_Repo, code));
+
+								} else {
+
+									repos[i].selected = false;
+
+								}
+
+							}
+
+							// -- Re-Call Function to Display Selected Repo -- //
+							$.ajax({
+								url: "interact/REPOSITORIES.md",
+								type: "get",
+								dataType: "html",
+								async: true,
+								success: function(result) {
+									repositories(result, code, repos, _selected_Repo); // Display Repos List
+								}
+							});
+
+						}
+					}
+				};
+			})(code, all_Repos));
+
+			loaded("Select Target Repo", meta.instructions, undefined, undefined, undefined, undefined, true);
+			
+		}
+		
+		if (selected) {
+			
+			response.forEach(function(repo) {
+				meta = repository(repo, meta);
+				all_Repos.push(repo);
+			});
+			_continue();
+			
+		} else {
+			
+			// -- Iterate to Display Current Page of Repos -- //
+			response.items.forEach(function(repo) {
+				meta = repository(repo, meta);
+				all_Repos.push(repo);
+			});
+
+			// -- Iterate to Display Next Page/s of Repos -- //
+			var _iterate = function(response) {
+				response.nextPage.fetch().then(function(response) {
+					response.items.forEach(function(repo) {
+						meta = repository(repo, meta);
+						all_Repos.push(repo);
+					});
+					if (response.nextPage) {
+						_iterate(response);
+					} else {
+						_continue();
+					}
+				})
+			}
+
+			// -- Kick off the iteration -- //
+			if (response.nextPage) {
+				_iterate(response);
+			} else {
+				_continue();
+			}
+			
+		}
+		
+
+	}
+	
+	var files = function(instructions, code, all, octo, git) {
+		
+		var _id = code.script.id;
+		var _list = "", meta = {line: instructions.split(/\r\n|\r|\n/).length - 1, lines : {}};
+		all.forEach(function(file) {
+			if (!file.git) file.git = {};
+			_list += ("\n*\t" + (file.git.selected ? "[x]" : file.git.changed || file.git.new ? "[ ]" : "[o]") + "\t" + file.name + (file.git.new ? " ** NEW **" : ""));
+			meta.line += 1;
+			meta.lines["Line_" + meta.line] = file.name;
+		});
+
+		var _display = instructions.replace(new RegExp(RegExp.escape("{{FILES}}"), "g"), _list);
+								
+		editor.addCommand("Select Files", "Space", "Space", (function(code, all, instructions) {
+			return function(ed) {
+				var _selected = ed.selection.lead.row;
+				var _file = meta.lines["Line_" + _selected];
+				if (_file) {
+					if (debug) console.log("SELECTED FILE:", _file);
+					for (var i = 0; i < all.length; i++) {
+						if (all[i].name == _file) {
+							if (all[i].git.changed || all[i].git.new) {
+								all[i].git.selected = !all[i].git.selected;
+								
+								// -- Cancel Commit -- //
+								editor.addCommand("Commit", "Ctrl-X", "Ctrl-C", (function(code) {
+									return function(ed) {
+										editor.removeCommand("Select Files").removeCommand("Review").removeCommand("Cancel");
+										nav.reload(code.script);
+									};
+								})(code));
+								
+								// -- Review Commit -- //
+								editor.addCommand("Review", "Ctrl-Enter", "Ctrl-Enter", (function(code, selected) {
+									return function(ed) {
+										editor.removeCommand("Select Files").removeCommand("Review").removeCommand("Cancel");
+										var _repo = octo.repos(git.repo.owner, git.repo.name);
+										_repo.branches("master").fetch().then(function(branch) {
+											
+											$.ajax({
+												url: "interact/REVIEW.md",
+												type: "get",
+												dataType: "html",
+												async: true,
+												success: function(result) {
+													
+													var _list = "", _message = "Add/Update -";
+													selected.forEach(function(file) {
+														_list += ("\n*\t" + file.name);
+														_message += (" " + file.name);
+													});
+													result = result
+														.replace(new RegExp(RegExp.escape("{{MESSAGE}}"), "g"), _message)
+														.replace(new RegExp(RegExp.escape("{{FILES}}"), "g"), _list);
+													
+													
+													loaded("Commit to Github -- Review", result, _, _, _, _, true, true);
+													
+													// -- Cancel Commit -- //
+													editor.addCommand("Cancel", "Ctrl-X", "Ctrl-C", (function(code) {
+														return function(ed) {
+															editor.removeCommand("Commit").removeCommand("Cancel");
+															nav.reload(code.script);
+														};
+													})(code));
+													
+													// -- Go Go Commit -- //
+													editor.addCommand("Commit", "Ctrl-Enter", "Ctrl-Enter", (function(code, selected) {
+														return function(ed) {
+															nav.busy(_id);
+															editor.removeCommand("Commit").removeCommand("Cancel");
+															var __message, lines = editor.getValue().split(/\r\n|\r|\n/);
+															for (var i = 0; i < lines.length; i++) {
+																if (lines[i].startsWith("COMMIT MESSAGE:")) {
+																	__message = lines[i].substr("COMMIT MESSAGE:".length).trim();
+																	break;
+																}
+															}
+															var _tree = [];
+															for (i = 0; i < selected.length; i++) {
+																var _source = selected[i].source;
+																_tree.push({
+																	"path" : selected[i].name,
+                									"mode" : "100644",
+                									"type" : "blob",
+																	"content" : selected[i].source,
+																});
+															}
+															var commit_sha = branch.commit.sha;
+															var tree_sha = branch.commit.commit.tree.sha;
+															_repo.git.trees.create({
+																"base_tree" : tree_sha,
+																"tree" : _tree,
+															}).then(function(tree) {
+																console.log("TREE", tree);
+																_repo.git.commits.create({
+																	"message": __message,
+																	"tree" : tree.sha,
+																	"parents"  : [commit_sha],
+																}).then(function(commit) {
+																
+																	_repo.git.refs("heads/master").update({
+																		"sha" : commit.sha,
+																	}).then(function(ref) {
+																		
+																		// -- Write back to .git object -- //
+																		if (!git.last) git.last = {};
+																		for (i = 0; i < selected.length; i++) {
+																			for (j = 0; j < tree.tree.length; j++) {
+																				if (tree.tree[j].path == selected[i].name) {
+																					git.last[selected[i].id] = tree.tree[j].sha;
+																					break;
+																				}
+																			}
+																		}
+																		git.log.push({
+																			name : "Commit",
+																			when : new Date().toISOString(),
+																			sha : commit.sha,
+																			url : commit.htmlUrl,
+																			message : commit.message,
+																		});
+
+																		code.git().source = jsyaml.safeDump(git);
+																		code.script.files.forEach(function(file) {delete file.git});
+																		gapi.client.request({
+																			path: "/upload/drive/v3/files/" + code.script.id,
+																			method: "PATCH",
+																			params: {uploadType: "media"},
+																			body: JSON.stringify({files: code.script.files}),
+																		}).then(function() {
+
+																			nav.busy(_id);
+																			selected.forEach(function(file) {
+																				nav.change(file.id, "status-committed", 5000);
+																			});
+
+																		}, function(err) {
+
+																			if (debug) console.log("SAVING ERROR", err);
+																			nav.busy(_id).error(_id, err);
+
+																		});
+																		
+																	}, function(err) {
+																		if (debug) console.log("GITHUB REF CREATE ERROR", err);
+																		nav.busy(_id).error(_id, err);
+																	})
+																	
+																}, function(err) {
+																	if (debug) console.log("GITHUB COMMIT CREATE ERROR", err);
+																	nav.busy(_id).error(_id, err);
+																});
+																
+															}, function(err) {
+																if (debug) console.log("GITHUB TREE CREATE ERROR", err);
+																nav.busy(_id).error(_id, err);
+															});
+														
+														}
+														
+													})(code, selected));
+												
+												}
+											
+											});
+											
+										}, function(err) {
+											if (debug) console.log("GITHUB BRANCH ERROR", err);
+											nav.busy(_id).error(_id, err);
+										})
+									};
+								})(code, all.filter(function(file) {return file.git.selected})));
+							}
+						}
+					}
+				}
+				files(instructions, code, all, octo, git);
+			};
+		})(code, all, instructions));
+
+		loaded("Commit to Github -- Choose Files", _display, _, _, _, _, true);
+		
+	}
+	
+	var commit = function(customise) { // -- Handle Commit Script -- //
+		
+		if (code) {
+			
+			var _id = customise ? code.script.id : code.git() ? code.file.id : code.script.id;
+			nav.busy(_id, "commit");
+			
+			hello("github").login({force: false, scope: "basic, gist, repo"}).then(function(a) {
+				
+				if (debug) console.log("GITHUB LOGIN", a);
+				
+				var octo = new Octokat({
+  				token : a.authResponse.access_token,
+					acceptHeader : "application/vnd.github.cannonball-preview+json",
+				});
+
+				if (!code.git()) { // Configure before commit
+				
+					octo.user.repos.fetch().then(function(r) {
+						
+						if (debug) console.log("GITHUB REPOS", r.items);
+
+						// -- Load the Repositories Instructions -- //
+						$.ajax({
+							url: "interact/REPOSITORIES.md",
+							type: "get",
+							dataType: "html",
+							async: true,
+							success: function(result) {
+								repositories(result, code, r); // Display Repos List
+							}
+						});
+
+						nav.busy(_id);
+						
+					}, function(err) {
+						if (debug) console.log("GITHUB REPO ERROR", err);
+						nav.busy(_id).error(_id, err);
+					});
+					
+				} else { // Just commit
+
+					// -- Read Config File -- //
+					var git = jsyaml.safeLoad(code.git().source);
+					if (debug) console.log("LOADED .GIT:", git);
+
+					if (customise) {
+								
+						// -- Load the Commit Instructions -- //
+						$.ajax({
+							url: "interact/FILES.md",
+							type: "get",
+							dataType: "html",
+							async: true,
+							success: function(result) {
+								octo.repos(git.repo.owner, git.repo.name).contents.fetch()
+									.then(function(contents) {
+										contents.items.forEach(function(content) {
+											var file = code.script.files.find(function(file) {return file.name == content.name});
+											if (file) {
+												var _sha = shash.hex("blob " + file.source.length + "\0" + file.source);
+												if (content.sha != _sha) {
+													if (!file.git) file.git = {};
+													file.git.changed = true;
+												}
+											}
+										});
+										code.script.files.forEach(function(file) {
+											var content = contents.items.find(function(c) {return c.name == file.name});
+											if (!content) {
+												if (!file.git) file.git = {};
+												file.git.new = true;
+											}
+										});
+										files(result, code, code.script.files.filter(
+											function(f) {return f.name != ".git"}), octo, git);
+										nav.busy(_id);
+								},function(err) {
+									if (debug) console.log("GITHUB CONTENTS ERROR", err);
+									nav.busy(_id).error(_id, err);
+								});
+
+							}
+						});
+								
+					} else {
+								
+						var parameters = {
+							content: Base64.encode(code.file.source),
+						};
+
+						// From: http://stackoverflow.com/questions/7225313/how-does-git-compute-file-hashes
+						var _sha = shash.hex("blob " + code.file.source.length + "\0" + code.file.source);
+						
+						if (!git.last && git.last[code.file.id]) { // Creating
+							parameters.message = "Creating " + code.file.name + " [" + code.file.id + "]";
+						} else if (_sha != git.last[code.file.id]) { // Updating
+							parameters.message = "Updating " + code.file.name + " [" + code.file.id + "]";
+							parameters.sha = git.last[code.file.id];
+						}
+
+						if (parameters.message) {
+						
+							octo.repos(git.repo.owner, git.repo.name).contents(code.file.name)
+								.add(parameters).then(function(info) {
+
+									// -- Write back to .git object -- //
+									if (!git.last) git.last = {}
+									git.last[code.file.id] = info.content.sha;
+									git.log.push({
+										name : "Commit",
+										when : new Date().toISOString(),
+										sha : info.commit.sha,
+										url : info.commit.htmlUrl,
+										message : info.commit.message,
+									});
+
+									code.git().source = jsyaml.safeDump(git);
+
+									gapi.client.request({
+										path: "/upload/drive/v3/files/" + code.script.id,
+										method: "PATCH",
+										params: {uploadType: "media"},
+										body: JSON.stringify({files: code.script.files}),
+									}).then(function() {
+
+										nav.busy(_id).change(_id, "status-committed", 5000);
+										// nav.reload(code.script);
+
+									}, function(err) {
+
+										if (debug) console.log("SAVING ERROR", err);
+										nav.busy(_id).error(_id, err);
+
+									});
+
+								}, function(err) {
+
+									if (debug) console.log("GITHUB COMMIT ERROR", err);
+									nav.busy(_id).error(_id, err);
+
+								}
+							);
+							
+						} else {
+							
+							if (debug) console.log("NO NEED TO COMMIT");
+							nav.busy(_id);
+							
+						}
+								
+					}
+
+				}
+
+			}, function(err) {
+				if (debug) console.log("GITHUB LOGIN ERROR", err);
+				nav.busy(_id).error(_id, err);
+			})
+
+		}
+		
+	}
+	
 	var clear = function() {
 		
 		// TODO: What if there are loaded instructions?
@@ -178,11 +830,40 @@ $(function() {
 		
 	}
 	
-	var diff = function() { // -- Handle Change Differences -- //
+	var showDiff = function(current, other) {
+		
+		var _diff = JsDiff.diffLines(other, current, {newlineIsToken: true}), _diff_View = "";
+				
+		if (debug) console.log("CALCULATED DIFF", _diff);
+				
+		_diff.forEach(function(part, i, parts) {
+			if (part.added || part.removed) {
+				part.value.split(/\r\n|\r|\n/).forEach(function(line, j, lines) {
+					if (line || j > 0) {
+						_diff_View += (part.added ? "+" : "-") + line +
+							(i + 1 == parts.length && j + 1 == lines.length ? "" : "\n");
+					} else if (j === 0 && lines.length == 2 && lines[j+1] === "") {
+					} else {
+						_diff_View += "\n";
+					}
+				})
+			} else {
+				_diff_View += part.value;
+			}
+		});
+				
+		editor.setValue(_diff_View, editor.Modes.diff, undefined).protect(); // Set it to read-only
+			
+		// -- Finally, update path -- //
+		$("#path span").text($("#path span").text() + " [DIFF]");
+		
+	}
+	
+	var diff = function(github) { // -- Handle Change Differences -- //
 		
 		if (previous) {
 			
-			// -- Restore Previos Code -- //
+			// -- Restore Previous Code -- //
 			code = previous.code;
 			
 			// -- Display it -- //
@@ -194,44 +875,61 @@ $(function() {
 			// -- Clear Previous -- //
 			previous = undefined;
 			
-		} else if (code && changed[code.file.id]) {
+		} else if (code) {
 			
-			if (hash.hex(changed[code.file.id]) != hash.hex(code.value)) {
-				
-				var _diff = JsDiff.diffLines(code.value, changed[code.file.id],
-																		 {newlineIsToken: true}), _diff_View = "";
-				
-				if (debug) console.log("CALCULATED DIFF", _diff);
-				
-				_diff.forEach(function(part, i, parts) {
-					if (part.added || part.removed) {
-						part.value.split(/\r\n|\r|\n/).forEach(function(line, j, lines) {
-							console.log("LINES", lines);
-							if (line || j > 0) {
-								_diff_View += (part.added ? "+" : "-") + line +
-									(i + 1 == parts.length && j + 1 == lines.length ? "" : "\n");
-							} else if (j === 0 && lines.length == 2 && lines[j+1] === "") {
-							} else {
-								_diff_View += "\n";
-							}
-						})
-					} else {
-						_diff_View += part.value;
-					}
-				});
-				
-				// -- Set the Previous (to un-diff) -- //
-				previous = {
-					code : code,
-					value : editor.getValue(),
-					path : $("#path span").text(),
-				};
-				
-				code = undefined;
-				editor.setValue(_diff_View, editor.Modes.diff, undefined).protect(); // Set it to read-only
+			// -- Main Variables -- //
+			var _id = code.file.id;
+			var _earlier = code.value;
 			
-				// -- Finally, update path -- //
-				$("#path span").text(previous.path + " [DIFF]");
+			// -- Set the Previous (to un-diff) -- //
+			previous = {
+				code : code,
+				value : editor.getValue(),
+				path : $("#path span").text(),
+			};
+			code = undefined;
+			
+			if (github && previous.code.git()) {
+				
+				nav.busy(_id);
+				
+				var git = jsyaml.safeLoad(previous.code.git().source);
+				if (debug) console.log("LOADED .GIT:", git);
+				
+				if (git.last[_id]) {
+					
+					hello("github").login({force: false, scope: "basic, gist, repo"}).then(function(a) {
+				
+						if (debug) console.log("GITHUB LOGIN", a);
+
+						var octo = new Octokat({
+							token : a.authResponse.access_token,
+							acceptHeader : "application/vnd.github.cannonball-preview+json",
+						});
+
+						octo.repos(git.repo.owner, git.repo.name).contents(previous.code.file.name)
+									.fetch().then(function(file) {
+
+							// -- Display the Diff -- //
+							showDiff(_earlier, Base64.decode(file.content));
+
+							nav.busy(_id);
+
+						}, function(err) {
+
+							if (debug) console.log("GITHUB ERROR", err);
+							nav.busy(_id).error(_id, err);
+
+						});
+
+					});
+					
+				}
+				
+			} else if (changed[_id]) {
+				
+				// -- Display the Diff -- //
+				showDiff(changed[_id], _earlier);
 				
 			}
 			
@@ -246,6 +944,19 @@ $(function() {
 	// -- Create and Append Editor -- //
 	
 	// -- Auth Handler -- //
+	var public = function() {
+		// -- Load the Public Instructions -- //
+		$.ajax({
+			url: "PUBLIC.md",
+			type: "get",
+			dataType: "html",
+			async: true,
+			success: function(result) {
+				if (result) loaded("Getting Started ...", result);
+			}
+		});
+	}
+	
 	startAuthFlow(
 		function(user, after) { // Authorised
 
@@ -281,16 +992,22 @@ $(function() {
 			}).then(function() {
 				
 				// -- Enable Navigator, Interaction, Load Initial Help & Instructions Document -- //
-				nav = Navigator().initialise(_container, editor, status, loaded, clear, debug);
+				nav = Navigator().initialise(_container, editor, status, loaded, clear, force, debug);
 				Interaction().initialise(
-					window, editor, nav, {"save" : save, "diff" : diff, "load" : loaded,
-																"remove" : remove, "create" : create}, debug);
+					window, editor, nav, {
+						"save" : save, "diff" : diff, "load" : loaded, "remove" : remove, 
+						"create" : create, "commit" : commit, "abandon" : abandon,
+					}, debug);
 			
 			}).catch(function(err) {if (debug) console.log("LOCAL_FORAGE ERROR:", err);});
 
 		}, function() { // Un-Authorised
 
-		$("<form />", {
+			// Handle Post Up Session Changes to Google Drive
+			// Then clear local forage of all non-committed edits
+			// Need a keyboard shortcut too to display saved edits / manage them?
+			
+			$("<form />", {
 				id: "authorise", class: "navbar-form", role: "form"
 			})
 			.append($("<button />", {
@@ -307,16 +1024,21 @@ $(function() {
 			$(".auth-only").hide();
 			editor.changeWidth("100%");
 			
-			// -- Load the Public Instructions -- //
-			$.ajax({
-				url: "PUBLIC.md",
-				type: "get",
-				dataType: "html",
-				async: true,
-				success: function(result) {
-					if (result) loaded("Getting Started ...", result);
-				}
-			});
+			// -- Clear Local Changes -- //
+			if (localforage) {
+				
+				localforage.clear().then(function() {
+					changed = {};
+					public();
+				}).catch(function(err) {
+					if (debug) console.log("LOCAL_FORAGE ERROR", err);
+				});
+				
+			} else {
+				
+				public();
+				
+			}
 			
 	});
 	// -- Auth Handler -- //

@@ -15,10 +15,11 @@ Keyboard Actions
 * Push away Navigator                     ==>     __[CTRL | ⌘] + Right || Swipe Right__
 * Go Full Screen                          ==>     __[CTRL | ⌘] + Up || Pinch Out__
 * Exit Full Screen                        ==>     __[CTRL | ⌘] + Down || Pinch In__
-* Save (Entire) Script or File            ==>     __(SHIFT) + [CTRL | ⌘] + S__
-* Add / Remove File from Script           ==>     __[CTRL | ⌘] + B / Qx2__
-* Diff Locally Saved Script               ==>     __[CTRL | ⌘] + M__
-* (Configure) Commit to Github            ==>     __(SHIFT) + [CTRL | ⌘] + G__
+* Save (Entire) Script/File               ==>     __(SHIFT) + [CTRL | ⌘] + S__
+* Add (HTML) / Remove File from Script    ==>     __(SHIFT) + [CTRL | ⌘] + B / Q^Q__
+* Diff (Github) Saved Script              ==>     __(SHIFT) + [CTRL | ⌘] + M__
+* Abandon Local Changes                   ==>     __[CTRL | ⌘] + X^X__
+* Commit (Customise) File/s to Github     ==>     __(SHIFT) + [CTRL | ⌘] + G__
 
 Keyboard Help
 -------------

@@ -66,18 +66,39 @@ Editor = function() {
 
   // -- Internal Variables -- //
   var _id = uuid.v4(), _debug = false, Document;
-	var _element, _editor, _session;
+	var _element, _editor, _session, _mode;
   // -- Internal Variables -- //
   
 	// -- Internal Functions -- //
-
+	var _getValue = function() {
+		
+		if (_session) {
+				
+			var value = _session.getValue();
+				
+			// -- Run Reversed Interceptors if required -- //
+			if (value && _mode.interceptors) {
+				_mode.interceptors.forEach(function(interceptor) {
+					value = value.replace(new RegExp(RegExp.escape(interceptor.mask), "g"), interceptor.match);
+				});
+			}
+				
+			return value;
+				
+		}
+		
+	}
+	// -- Internal Functions -- //
+	
   // -- External Visibility -- //
   return {
 
     // -- External Enums -- //
 		Modes : {
+			css : {mode :"ace/mode/css"},
 			diff : {mode :"ace/mode/diff"},
 			html : {mode : "ace/mode/html"},
+			interact : {persist_position : true, mode : "ace/mode/markdown"},
 			javascript : {mode : "ace/mode/javascript"},
 			gas : {mode : "ace/mode/javascript", completer : {
 				getCompletions: function(editor, session, pos, prefix, callback) {
@@ -94,8 +115,17 @@ Editor = function() {
 					}));
     		}
 			}},
+			gas_html_css : {mode : "ace/mode/css", interceptors : [
+				{match : "</style>", mask : "/* </ style > <== ** AMMENDED BY SCRIPTR ** ¯\_(ツ)_/¯ */"},
+				{match : "<style>", mask : "/* < style > <==  ** AMMENDED BY SCRIPTR ** to hide mixed css/html from syntax checking, but relax...these amendments won't be saved! */"},
+			]},
+			gas_html_js : {mode : "ace/mode/javascript", interceptors : [
+				{match : "</script>", mask : "// </ script > <== ** AMMENDED BY SCRIPTR ** ¯\_(ツ)_/¯"},
+				{match : "<script>", mask : "// < script > <== ** AMMENDED BY SCRIPTR ** to hide mixed js/html from syntax checking, but relax...these amendments won't be saved!"},
+			]},
 			markdown : {mode : "ace/mode/markdown"},
 			text : {mode : "ace/mode/text"},
+			yaml : {mode : "ace/mode/yaml"},
 		},
     // -- External Enums -- //
     
@@ -135,16 +165,41 @@ Editor = function() {
 				}
 			})
 			
+			// -- Set default mode -- //
+			_mode = this.Modes.text;
 			// -- Return for Chaining -- //
 			return this;
 			
     },
   
+		focus : function() {
+			_element.focus();
+			return this; // -- Return for Chaining -- //
+		},
+		
 		getValue : function() {
-			return _session ? _session.getValue() : undefined;
+			
+			return _getValue();
+			
 		},
 
 		setValue : function(value, mode, afterChange) {
+			
+			// -- Handle returning to same spot in doc -- //
+			var _row, _col;
+			if (mode.persist_position &&  _editor.selection && _editor.selection.lead) {
+				_row = _editor.selection.lead.row;
+				_col = _editor.selection.lead.column;
+			}
+			
+			if (mode) _mode = mode;
+			
+			// -- Run Interceptors if required -- //
+			if (_mode.interceptors) {
+				_mode.interceptors.forEach(function(interceptor) {
+					value = value.replace(new RegExp(RegExp.escape(interceptor.match), "g"), interceptor.mask);
+				});
+			}
 			
 			var Document = require("ace/document").Document;
 			_session = ace.createEditSession(new Document(value));
@@ -152,15 +207,24 @@ Editor = function() {
 			_session.setTabSize(4);
 			_session.setUseWrapMode(true);
 			_session.setWrapLimitRange();
-			_session.setMode(mode.mode);
+			_session.setMode(_mode.mode);
+			
 			if (mode.completer) {
-				_editor.completers.push(mode.completer);
+				_editor.completers.push(_mode.completer);
 			} else {
 				// Remove Custom Completers?
 			}
 			if (afterChange) _session.on("change", function(e) {
-				afterChange(_session.getValue());
+				afterChange(_getValue());
 			}); // Enable Edit Triggers
+			
+			// Enable Emmet for HTML Editing
+			if (_debug) console.log("SETTING EMMET MODE:", _mode.mode == "ace/mode/html"); // Log Emmet Mode
+			_editor.setOption("enableEmmet", _mode.mode == "ace/mode/html");
+			
+			// -- Got to original spot -- //
+			if (_row || _col) _editor.selection.moveTo(_row, _col);
+			
 			return this; // -- Return for Chaining -- //
 		},
 		
@@ -217,9 +281,14 @@ Editor = function() {
 			_editor.commands.addCommand({
 				name: details,
 				bindKey: {win: winKeys,  mac: macKeys},
-				exec: function(editor) {func();},
+				exec: function(editor) {func(editor);},
 				readOnly: true,
 			});
+			return this; // -- Return for Chaining -- //
+		},
+		
+		removeCommand : function(details) {
+			_editor.commands.removeCommand(details, false);
 			return this; // -- Return for Chaining -- //
 		},
     // -- External Functions -- //

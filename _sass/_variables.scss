@@ -10,13 +10,17 @@ $font-spacing-heading:				0.1rem;
 /* == Colours == */
 $colour-background: 					#000000;
 $colour-navigator:            rgba(#871f52, 0.1); //lighten($colour-background, 10%);
+$colour-navigator-input:      rgba(#871f52, 0.2);
 $colour-emphasis: 						#cccccc;
 $colour-foreground: 					darken($colour-emphasis, 10%);
 $colour-highlight: 						#27a532;
 $colour-debug: 								#888888;
 $colour-busy-line:            #646464;
+$colour-create-fill:          #cc0099;
 $colour-load-fill:            #5b9e60;
 $colour-save-fill:            #ffaa00;
+$colour-delete-fill:          #e60000;
+$colour-commit-fill:          #5c5cd6;
 
 /* == Sizes == */
 $navigator-line:              1.1rem;

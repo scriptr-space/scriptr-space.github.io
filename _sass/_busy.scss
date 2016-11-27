@@ -11,8 +11,12 @@
 	@include animation("busy-outer 2s infinite ease");
 	
 	> span {
+		background-color: $colour-busy-line;
+		&.delete {background-color: $colour-delete-fill;}
+		&.create {background-color: $colour-create-fill;}
 		&.load {background-color: $colour-load-fill;}
 		&.save {background-color: $colour-save-fill;}
+		&.commit {background-color: $colour-commit-fill;}
 		vertical-align: top;
 		display: inline-block;
 		width: 100%;

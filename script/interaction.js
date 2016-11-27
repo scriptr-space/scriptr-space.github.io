@@ -38,22 +38,6 @@ Interaction = function() {
 				return;
 			} else if (e.ctrlKey || e.metaKey) {
 				switch(e.which) {
-					case 221: // ] - Change Theme/Font (Cycle Forwards)
-						e.preventDefault();
-						if (e.shiftKey) { // Shift Pressed, so change Font instead
-							_editor.changeFont(false);
-						} else { // Change There
-							_editor.changeTheme(false);
-						}
-						break;
-					case 219: // [ - Change Theme/Font (Cycle Backwards)
-						e.preventDefault();
-						if (e.shiftKey) { // Shift Pressed, so change Font instead
-							_editor.changeFont(true);
-						} else { // Change There
-							_editor.changeTheme(true);
-						}
-						break;
 					case 37: // Left Arrow - Pull Out Navigator
 						e.preventDefault(); _navigator.show(); break;
 					case 38: // Up Arrow - Go to Full Screen Mode
@@ -66,16 +50,36 @@ Interaction = function() {
 						e.preventDefault();
 						if (screenfull.enabled && screenfull.isFullscreen) screenfull.exit();
 						break;
-					case 66: // B = Add File to Script
-						e.preventDefault(); _functions.create(); break;
+					case 66: // B = Add (HTML) File to Script
+						e.preventDefault(); _functions.create(e.shiftKey); break;
+					case 71: // G - (Custom) Commit to Github
+						e.preventDefault(); _functions.commit(e.shiftKey); break;
 					case 73: // I = Insert/Overwrite
 						e.preventDefault(); _editor.toggleOverwrite(); break;
-					case 83: // S - Save
-						e.preventDefault(); _functions.save(e.shiftKey);  break;
 					case 77: // M - Diff
 						e.preventDefault(); _functions.diff(); break;
 					case 81: // Q - Remove File from Script
 						e.preventDefault(); _functions.remove(); break;
+					case 83: // S - Save
+						e.preventDefault(); _functions.save(e.shiftKey);  break;
+					case 88: // X - Abandon Local Changes from Script
+						e.preventDefault(); _functions.abandon(); break;
+					case 219: // [ - Change Theme/Font (Cycle Backwards)
+						e.preventDefault();
+						if (e.shiftKey) { // Shift Pressed, so change Font instead
+							_editor.changeFont(true);
+						} else { // Change There
+							_editor.changeTheme(true);
+						}
+						break;
+					case 221: // ] - Change Theme/Font (Cycle Forwards)
+						e.preventDefault();
+						if (e.shiftKey) { // Shift Pressed, so change Font instead
+							_editor.changeFont(false);
+						} else { // Change There
+							_editor.changeTheme(false);
+						}
+						break;
 					default: return; // Exit Handler
 				}
 			} else if (e.altKey) {
@@ -86,6 +90,8 @@ Interaction = function() {
 						e.preventDefault(); _show(_help.instructions); break;
 					case 76: // L - License
 						e.preventDefault(); _show(_help.license); break;
+					case 82: // R - Readme, often pronounced Instructions
+						e.preventDefault(); _show(_help.instructions); break;
 					case 83: // S - Shortcuts
 						e.preventDefault(); _show(_help.shortcuts); break;
 					case 84: // T - To-Do
@@ -114,12 +120,18 @@ Interaction = function() {
 		// -- Action Editor Shortcuts -- //
 		_editor.addCommand("Toggle Insert/Overwrite", "Ctrl-I", "Command-I", _editor.toggleOverwrite);
 
-		_editor.addCommand("Save File", "Ctrl-S", "Command-S", function() {_functions.save()});
+		_editor.addCommand("Save File", "Ctrl-S", "Command-S", function() {
+			_functions.save();
+		});
 		_editor.addCommand("Save Entire Script", "Ctrl-Shift-S", "Command-Shift-S",
-			 function() {_functions.save(true)});
+											 function() {_functions.save(true)});
 		
-		_editor.addCommand("Diff Script", "Ctrl-M", "Command-M", _functions.diff);
-
+		_editor.addCommand("Diff Script", "Ctrl-M", "Command-M", function() {
+			_functions.diff();
+		});
+		_editor.addCommand("Diff Script to Github", "Ctrl-Shift-M", "Command-Shift-M",
+											 function() {_functions.diff(true)});
+		
 		_editor.addCommand("Change Font", "Ctrl-Shift-[", "Command-Shift-[", function() {
 			_editor.changeFont(true); // Change Font (Reverse)
 		});
@@ -137,30 +149,29 @@ Interaction = function() {
 		_editor.addCommand("Create File in Script", "Ctrl-B", "Command-B", function() {
 			_functions.create();
 		});
+		_editor.addCommand("Create HTML File in Script", "Ctrl-Shift-B", "Command-Shift-B", function() {
+			_functions.create(true);
+		});
 		
-		_editor.addCommand("Remove File from Script", "Ctrl-Q", "Command-B", function() {
+		_editor.addCommand("Remove File from Script", "Ctrl-Q", "Command-Q", function() {
 			_functions.remove();
 		});
 		
-		_editor.addCommand("Commit to Github", "Ctrl-G", "Command-G", function() {
-			var o = hello("github");
-			o.login({force: false, scope: "basic, gist, repo"}).then(function(a) {
-				console.log("GITHUB LOGIN", a);
-				var gh = new GitHub({
-  				token: a.authResponse.access_token
-				});
-				const me = gh.getUser();
-				me.listRepos().then(
-					function(r) {console.log("GITHUB REPOS", r)}, 
-					function(err) {console.log("GITHUB REPO ERROR", err)}
-				);
-			}, function(err) {console.log("GITHUB LOGIN ERROR", err)})
+		_editor.addCommand("Abandon Local File Changes from Script", "Ctrl-X", "Command-X", function() {
+			_functions.abandon();
 		});
+		
+		_editor.addCommand("Commit to Github", "Ctrl-G", "Command-G", function() {
+			_functions.commit();
+		});
+		_editor.addCommand("Custom Commit to Github", "Ctrl-Shift-G", "Command-Shift-G",
+			 function() {_functions.commit(true)});
 		// -- Action Editor Shortcuts -- //
 
 		// -- Further Show Editor Shortcuts -- //
 		_editor.addCommand("Show Instructions", "Alt-I", "Alt-I", function() {_show(_help.instructions)});
-
+		_editor.addCommand("Show Readme", "Alt-R", "Alt-R", function() {_show(_help.instructions)});
+		
 		_editor.addCommand("Show License", "Alt-L", "Alt-L", function() {_show(_help.license)});
 
 		_editor.addCommand("Show Shortcuts", "Alt-S", "Alt-S", function() {_show(_help.shortcuts)});

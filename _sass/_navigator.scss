@@ -28,19 +28,39 @@ div.navigator {
 					color: #aaaaff;
 				}	
 			}
+			a.git {
+				color: #333;
+				&:after {content: " ♜";}
+			}
+			a.error, span.error {
+				color: #ff0000;
+				&:after {content: "⚠";}
+			}
+			a.current {
+				color: #dce091;
+				&:before {content: "♥ ";}
+			}
 			a.status-added {
 				color: #66ff33;
 				&:after {content: " ⚡";}
 			}
-			a.status-deleted {
+			a.status-imperilled {
+				color: #b30000;
+				&:after {content: " ☂";}
+			}
+			a.status-abandoned {
 				color: #666; // 
+				&:after {content: " ⚐";}
+			}
+			a.status-deleted {
+				color: #444; // 
 				&:after {content: " ✞";}
 			}
 			a.status-condemned {
 				color: #b30000;
 				&:after {content: " ✖";}
 			}
-			a.status-saved {
+			a.status-saved, a.status-committed {
 				color: #7ca36e;
 				&:after {content: " ✔";}
 			}
@@ -48,9 +68,18 @@ div.navigator {
 				color: #d68777;
 				&:after {content: " ★";}
 			}
-			a.current {
-				color: #dce091;
-				&:before {content: "♥ ";}
+			input {
+				border: 1px dashed $colour-background;
+    		border-radius: 10px;
+				background-color: $colour-navigator-input;
+				color: inherit;
+				font-size: inherit;
+				width: 95%;
+				padding: 5px;
+				&:focus {
+					border-color: $colour-emphasis;
+					outline: none;
+				}
 			}
 			ul {
 				margin: 0 0 0.5em 2em;
