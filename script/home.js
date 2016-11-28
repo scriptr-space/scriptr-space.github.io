@@ -1,5 +1,5 @@
 // -- Global Editor Variables -- //
-var debug, code, previous, editor, nav, _;
+var debug, code, previous, editor, nav, _, _force;
 var hash = new Hashes.MD5(), shash = new Hashes.SHA1(), changed = {}, saved = {}, deleted = {};
 // -- Global Variables -- //
 
@@ -289,16 +289,16 @@ $(function() {
 
 	var repository = function(repo, meta) {
 		
-		meta.instructions += "\n\n";
+		meta.repositories += "\n\n";
 		meta.line += 2;
 		
 		var _owner = repo.owner.login;
-		meta.instructions += ("*\t" + (repo.selected ? "[x]" : (repo.permissions.push ? "[ ]" : "[o]")) + "\t" + repo.name + (_owner ? " (" + _owner + ")" : ""));
+		meta.repositories += ("*\t" + (repo.selected ? "[x]" : (repo.permissions.push ? "[ ]" : "[o]")) + "\t" + repo.name + (_owner ? " (" + _owner + ")" : ""));
 		
 		meta.lines["Line_" + meta.line] = repo.fullName;
 								
 		if (repo.description) {
-			meta.instructions += ("\n\t\t"+ repo.description);
+			meta.repositories += ("\n\t\t"+ repo.description);
 			meta.line += 1;
 			meta.lines["Line_" + meta.line] = repo.fullName;
 		}
@@ -306,12 +306,12 @@ $(function() {
 		return meta;
 	}
 	
-	var repositories = function(instructions, code, response, selected) {
+	var repositories = function(instructions, code, response, selected, file_Name, display_Details, octo) {
 
 		instructions = instructions.replace(new RegExp(RegExp.escape("{{DETAILS}}"), "g"),
 			selected ? "You have currently selected repo: __" + selected.fullName + "__" : "You haven't yet selected any repos.");
 		
-		var meta = {line: instructions.split(/\r\n|\r|\n/).length - 1, lines : {}, instructions : instructions};
+		var meta = {line: instructions.split(/\r\n|\r|\n/).length - 1, lines : {}, repositories : "", instructions : instructions};
 		
 		var all_Repos = []; // Hold all repositories for selection.
 		
@@ -325,72 +325,173 @@ $(function() {
 						if (meta.lines["Line_" + selected_Row]) {
 							if (debug) console.log("SELECTED REPO:", meta.lines["Line_" + selected_Row]);
 							for (var i = 0; i < repos.length; i++) {
+								
 								if (repos[i].fullName == meta.lines["Line_" + selected_Row] && repos[i].permissions.push) {
 									
-									repos[i].selected = !repos[i].selected;
+									repos[i].selected = true;
 									_selected_Repo = repos[i];
 
-									editor.addCommand("Commit Repo", "Ctrl-Enter", "Ctrl-Enter", (function(repo, code) {
-										return function(ed) {
-											if (repo) {
-												if (debug) console.log("CONFIRMED REPO:", repo);
-												editor.removeCommand("Select Repo").removeCommand("Commit Repo");
+									if (display_Details) { // Next stage is to show repo info
+										
+										editor.addCommand("Show Repo", "Ctrl-Enter", "Ctrl-Enter", (function(repo, code) {
+											return function(ed) {
+												if (repo) {
+													if (debug) console.log("DISPLAY REPO:", repo);
+													editor.removeCommand("Select Repo").removeCommand("Show Repo");
 
-												var now = new Date().toISOString();
-												var git = {
-													repo : {
-														owner : repo.owner.login,
-														name : repo.name,
-													},
-													created : now,
-													type : "COMMIT",
-													exclude : [
-														{name : ".git", description : ""},
-													],
-													exceptions : [
-														{
-															id : uuid.v4() + " | GOOGLE DRIVE ID OF SCRIPT+FILE",
-															name : uuid.v4().substr(0,8) + ".gs | ID will be preferred over NAME (if available)",
-															description : "Random Example File",
-															repo : {
-																owner : repo.owner.login + " | OR ANOTHER",
-																name : repo.name + " | OR ANOTHER",
-															},
-															type : "COMMIT | CLONE",
+													$.ajax({
+														url: "interact/REPOSITORY.md",
+														type: "get",
+														dataType: "html",
+														async: true,
+														success: function(result) {
+															repo.branches.fetch().then(function(branches) {
+																var _branch_Count = branches.items.length;
+																var _branches = [];
+																var _continue = function() {
+																	loaded("Repository Details", result.replace(new RegExp(
+																					RegExp.escape("{{DETAILS}}"), "g"), 
+																					jsyaml.safeDump({"Repo Name" : repo.fullName, "Branches" : _branches}))
+																					, _, _, _, _, _);
+																}
+																
+																branches.items.forEach(function(branch) {
+																	var _branch = {Name : branch.name, "Last Author" : "",
+																								 "Last Message" : "", Total : 0, Lines : {}};
+																	repo.commits(branch.commit.sha).fetch().then(function(commit) {
+																		_branch["Last Author"] = commit.commit.author.name;
+																		_branch["Last Message"] = commit.commit.message;
+																		repo.git.trees(commit.commit.tree.sha).fetch({recursive : 1}).then(function(tree) {
+																			var file_Total = tree.tree.length, file_Count = 0;
+																			if (file_Total === 0) {
+																				_branches.push(_branch);
+																				if (debug) console.log("COMPLETED BRANCH:", _branch.Name);
+																				if (_branches.length == _branch_Count) _continue();
+																			} else {
+																				tree.tree.forEach(function(file) {
+																					if (file.mode == "100644") {
+																						repo.git.blobs(file.sha).fetch().then(function(blob) {
+																							if (blob.content) {
+																								if (!file.path.toLowerCase().endsWith(".png") &&
+																										!file.path.toLowerCase().endsWith(".jpg") &&
+																									 	!file.path.toLowerCase().endsWith(".jpeg") &&
+																									 	!file.path.toLowerCase().endsWith(".bmp") &&
+																										!file.path.toLowerCase().endsWith(".gif") &&
+																										!file.path.toLowerCase().endsWith(".svg") &&
+																									 	!file.path.toLowerCase().endsWith(".ico") &&
+																									 	!file.path.toLowerCase().endsWith(".dll") &&
+																									 	!file.path.toLowerCase().endsWith(".exe")) {
+																									
+																									var _lines = blob.content.split(/\r\n|\r|\n/).length;
+																									if (!_branch.Lines[file.path]) {
+																										_branch.Lines[file.path] = _lines;
+																										_branch.Total += _lines;
+																									}
+																									
+																								}
+																							}
+																							file_Count += 1;
+																							if (file_Count == file_Total) {
+																								_branches.push(_branch);
+																								if (debug) console.log("COMPLETED BRANCH:", _branch.Name);
+																								if (_branches.length == _branch_Count) _continue();
+																							}
+																						}, function(err) {
+																							file_Count += 1;
+																							if (file_Count == file_Total) {
+																								_branches.push(_branch);
+																								if (debug) console.log("COMPLETED BRANCH:", _branch.Name);
+																								if (_branches.length == _branch_Count) _continue();
+																							}
+																						});
+																					} else {
+																						file_Count += 1;
+																						if (file_Count == file_Total) {
+																							_branches.push(_branch);
+																							if (_branches.count == _branch_Count) _continue();
+																						}
+																					}
+																				})
+																			}
+																			
+																		});	
+																	});
+																	
+																})
+															});
 														}
-													],
-													last : {},
-													log : [
-														{name : "Configured", when : now,}
-													],
-												};
+													});
+													
+												}
+											};
 
-												// == Create .git file and configure ==
-												code.script.files.push({
-													name : ".git",
-													source : jsyaml.safeDump(git),
-													type : "html",
-												});
+										})(_selected_Repo, code));
+										
+									} else { // Next stage is to write .git
+										
+										editor.addCommand("Configure Repo", "Ctrl-Enter", "Ctrl-Enter", (function(repo, code) {
+											return function(ed) {
+												if (repo) {
+													if (debug) console.log("CONFIRMED REPO:", repo);
+													editor.removeCommand("Select Repo").removeCommand("Configure Repo");
 
-												gapi.client.request({
-														path: "/upload/drive/v3/files/" + code.script.id,
-														method: "PATCH",
-														params: {uploadType: "media"},
-														body: JSON.stringify({files: code.script.files}),
-													}).then(function() {
+													var now = new Date().toISOString();
+													var git = {
+														repo : {
+															owner : repo.owner.login,
+															name : repo.name,
+														},
+														created : now,
+														type : "COMMIT",
+														exclude : [
+															{name : ".git", description : ""},
+														],
+														exceptions : [
+															{
+																id : uuid.v4() + " | GOOGLE DRIVE ID OF SCRIPT+FILE",
+																name : uuid.v4().substr(0,8) + ".gs | ID will be preferred over NAME (if available)",
+																description : "Random Example File",
+																repo : {
+																	owner : repo.owner.login + " | OR ANOTHER",
+																	name : repo.name + " | OR ANOTHER",
+																},
+																type : "COMMIT | CLONE",
+															}
+														],
+														last : {},
+														log : [
+															{name : "Configured", when : now,}
+														],
+													};
 
-														nav.reload(code.script);
+													// == Create .git file and configure ==
+													code.script.files.push({
+														name : ".git",
+														source : jsyaml.safeDump(git),
+														type : "html",
+													});
 
-													}, function(err) {
+													gapi.client.request({
+															path: "/upload/drive/v3/files/" + code.script.id,
+															method: "PATCH",
+															params: {uploadType: "media"},
+															body: JSON.stringify({files: code.script.files}),
+														}).then(function() {
 
-														if (debug) console.log("SAVING ERROR", err);
+															nav.reload(code.script);
 
-												});
+														}, function(err) {
 
-											}
-										};
+															if (debug) console.log("SAVING ERROR", err);
 
-									})(_selected_Repo, code));
+													});
+
+												}
+											};
+
+										})(_selected_Repo, code));
+										
+									}
 
 								} else {
 
@@ -402,12 +503,12 @@ $(function() {
 
 							// -- Re-Call Function to Display Selected Repo -- //
 							$.ajax({
-								url: "interact/REPOSITORIES.md",
+								url: file_Name,
 								type: "get",
 								dataType: "html",
 								async: true,
 								success: function(result) {
-									repositories(result, code, repos, _selected_Repo); // Display Repos List
+									repositories(result, code, repos, _selected_Repo, file_Name, display_Details, octo); // Display Repos List
 								}
 							});
 
@@ -416,8 +517,9 @@ $(function() {
 				};
 			})(code, all_Repos));
 
-			loaded("Select Target Repo", meta.instructions, undefined, undefined, undefined, undefined, true);
-			
+			loaded("Select Target Repo", meta.instructions.replace(new RegExp(RegExp.escape("{{REPOSITORIES}}"), "g"), 
+							meta.repositories), _, _, _, _, true);
+
 		}
 		
 		if (selected) {
@@ -655,7 +757,9 @@ $(function() {
 			var _id = customise ? code.script.id : code.git() ? code.file.id : code.script.id;
 			nav.busy(_id, "commit");
 			
-			hello("github").login({force: false, scope: "basic, gist, repo"}).then(function(a) {
+			hello("github").login({force: _force, scope: "basic, gist, repo"}).then(function(a) {
+				
+				force = false;
 				
 				if (debug) console.log("GITHUB LOGIN", a);
 				
@@ -677,7 +781,7 @@ $(function() {
 							dataType: "html",
 							async: true,
 							success: function(result) {
-								repositories(result, code, r); // Display Repos List
+								repositories(result, code, r, _, "interact/REPOSITORIES.md", false, octo); // Display Repos List
 							}
 						});
 
@@ -808,6 +912,44 @@ $(function() {
 				nav.busy(_id).error(_id, err);
 			})
 
+		} else {
+			
+			// Show details of Github Repositories
+			hello("github").login({force: _force, scope: "basic, gist, repo"}).then(function(a) {
+				
+				_force = false;
+				
+				if (debug) console.log("GITHUB LOGIN", a);
+				
+				var octo = new Octokat({
+  				token : a.authResponse.access_token,
+					acceptHeader : "application/vnd.github.cannonball-preview+json",
+				});
+				
+				octo.user.repos.fetch().then(function(r) {
+						
+					if (debug) console.log("GITHUB REPOS", r.items);
+
+					// -- Load the Repositories Instructions -- //
+					$.ajax({
+						url: "interact/DETAILS.md",
+						type: "get",
+						dataType: "html",
+						async: true,
+						success: function(result) {
+							repositories(result, code, r, _, "interact/DETAILS.md", true, octo); // Display Repos List
+						}
+					});
+
+					nav.busy(_id);
+						
+				}, function(err) {
+					if (debug) console.log("GITHUB REPO ERROR", err);
+					nav.busy(_id).error(_id, err);
+				});
+				
+			});
+			
 		}
 		
 	}
@@ -898,8 +1040,10 @@ $(function() {
 				
 				if (git.last[_id]) {
 					
-					hello("github").login({force: false, scope: "basic, gist, repo"}).then(function(a) {
+					hello("github").login({force: _force, scope: "basic, gist, repo"}).then(function(a) {
 				
+						_force = false;
+						
 						if (debug) console.log("GITHUB LOGIN", a);
 
 						var octo = new Octokat({
@@ -1026,18 +1170,36 @@ $(function() {
 			
 			// -- Clear Local Changes -- //
 			if (localforage) {
-				
+
 				localforage.clear().then(function() {
 					changed = {};
 					public();
 				}).catch(function(err) {
 					if (debug) console.log("LOCAL_FORAGE ERROR", err);
 				});
-				
+
 			} else {
-				
+
 				public();
-				
+
+			}
+			
+			// -- Handle Github Auth -- //
+			var signed_in = function(session) {
+				console.log("TESTING GITHUB SESSION", session)
+				var currentTime = (new Date()).getTime() / 1000;
+				return session && session.access_token && session.expires > currentTime;
+			};
+			
+			if (signed_in(hello("github").getAuthResponse())) {
+				_force = true;
+				hello("github").logout().then(function() {
+					if (debug) console.log("LOGGED OUT OF GITHUB");
+				}, function(err) {
+					if (debug) console.log("GITHUB SIGNOUT ERROR", err);
+				});
+			} else {
+				if (debug) console.log("NOT SIGNED INTO GITHUB");
 			}
 			
 	});
