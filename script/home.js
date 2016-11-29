@@ -659,7 +659,6 @@ $(function() {
 																"base_tree" : tree_sha,
 																"tree" : _tree,
 															}).then(function(tree) {
-																console.log("TREE", tree);
 																_repo.git.commits.create({
 																	"message": __message,
 																	"tree" : tree.sha,
