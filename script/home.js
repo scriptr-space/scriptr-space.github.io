@@ -1,5 +1,5 @@
 // -- Global Editor Variables -- //
-var debug, code, previous, editor, nav, _, _force;
+var debug, code, previous, editor, nav, _;
 var hash = new Hashes.MD5(), shash = new Hashes.SHA1(), changed = {}, saved = {}, deleted = {};
 // -- Global Variables -- //
 
@@ -443,9 +443,7 @@ $(function() {
 														},
 														created : now,
 														type : "COMMIT",
-														exclude : [
-															{name : ".git", description : ""},
-														],
+														exclude : [".git"],
 														exceptions : [
 															{
 																id : uuid.v4() + " | GOOGLE DRIVE ID OF SCRIPT+FILE",
@@ -570,10 +568,25 @@ $(function() {
 		var _id = code.script.id;
 		var _list = "", meta = {line: instructions.split(/\r\n|\r|\n/).length - 1, lines : {}};
 		all.forEach(function(file) {
-			if (!file.git) file.git = {};
-			_list += ("\n*\t" + (file.git.selected ? "[x]" : file.git.changed || file.git.new ? "[ ]" : "[o]") + "\t" + file.name + (file.git.new ? " ** NEW **" : ""));
-			meta.line += 1;
-			meta.lines["Line_" + meta.line] = file.name;
+			
+			if (git.exclude.indexOf(file.name) < 0 && git.exclude.indexOf(file.id)) {
+				
+				if (!file.git) file.git = {};
+				file.git.exception = git.exceptions ? git.exceptions.find(function(exception) {return exception.id == file.id || exception.name == file.name}) : null;
+				file.git.direction = file.git.exception ? file.git.exception.type : git.type;
+
+				_list += ("\n*\t" + 
+										(file.git.selected ? "[x]" : file.git.changed || file.git.new ? "[ ]" : "[o]") + 
+										"\t" + file.name + 
+										(file.git.new ? " ☆" : "") +
+										(file.git.changed || file.git.new ? file.git.direction == "CLONE" ? " ⇦ _Git_" : " ➡ _Git_" : "")
+								 );
+
+				meta.line += 1;
+				meta.lines["Line_" + meta.line] = file.name;
+			
+			}
+		
 		});
 
 		var _display = instructions.replace(new RegExp(RegExp.escape("{{FILES}}"), "g"), _list);
@@ -620,7 +633,6 @@ $(function() {
 														.replace(new RegExp(RegExp.escape("{{MESSAGE}}"), "g"), _message)
 														.replace(new RegExp(RegExp.escape("{{FILES}}"), "g"), _list);
 													
-													
 													loaded("Commit to Github -- Review", result, _, _, _, _, true, true);
 													
 													// -- Cancel Commit -- //
@@ -643,6 +655,9 @@ $(function() {
 																	break;
 																}
 															}
+															
+															// TODO - Clone / Commit | + EXCEPTIONS!
+															
 															var _tree = [];
 															for (i = 0; i < selected.length; i++) {
 																var _source = selected[i].source;
@@ -756,7 +771,7 @@ $(function() {
 			var _id = customise ? code.script.id : code.git() ? code.file.id : code.script.id;
 			nav.busy(_id, "commit");
 			
-			hello("github").login({force: _force, scope: "basic, gist, repo"}).then(function(a) {
+			hello("github").login({force: false, scope: "basic, gist, repo"}).then(function(a) {
 				
 				force = false;
 				
@@ -837,63 +852,135 @@ $(function() {
 						});
 								
 					} else {
+						
+						// -- Only Continue if this file is not an exclusion -- //
+						if (git.exclude.indexOf(code.file.name) < 0 && git.exclude.indexOf(code.file.id)) {
+							
+							// -- Get Exception Details (if there) -- //
+							var _exception = git.exceptions ? git.exceptions.find(function(exception) {
+								return exception.id == code.file.id || exception.name == code.file.name;
+							}) : null;
+							var _direction = _exception ? _exception.type.toUpperCase() : git.type.toUpperCase();
+							var _repo_Owner = _exception ? _exception.repo.owner : git.repo.owner;
+							var _repo_Name = _exception ? _exception.repo.name : git.repo.name;
+
+							if (_direction == "CLONE") { // Run a clone (Github to us!)
 								
-						var parameters = {
-							content: Base64.encode(code.file.source),
-						};
+								octo.repos(_repo_Owner, _repo_Name).contents(code.file.name).fetch().then(function(content) {
 
-						// From: http://stackoverflow.com/questions/7225313/how-does-git-compute-file-hashes
-						var _sha = shash.hex("blob " + code.file.source.length + "\0" + code.file.source);
-						
-						if (!git.last && git.last[code.file.id]) { // Creating
-							parameters.message = "Creating " + code.file.name + " [" + code.file.id + "]";
-						} else if (_sha != git.last[code.file.id]) { // Updating
-							parameters.message = "Updating " + code.file.name + " [" + code.file.id + "]";
-							parameters.sha = git.last[code.file.id];
-						}
+										console.log("CONTENT", content);
+									
+										if (git.last && git.last[code.file.id] == content.sha) {
 
-						if (parameters.message) {
-						
-							octo.repos(git.repo.owner, git.repo.name).contents(code.file.name)
-								.add(parameters).then(function(info) {
+											// No change.
+											if (debug) console.log("NO NEED TO CLONE");
+											nav.busy(_id);
 
-									// -- Write back to .git object -- //
-									if (!git.last) git.last = {}
-									git.last[code.file.id] = info.content.sha;
-									git.log.push({
-										name : "Commit",
-										when : new Date().toISOString(),
-										sha : info.commit.sha,
-										url : info.commit.htmlUrl,
-										message : info.commit.message,
-									});
+										} else {
 
-									code.git().source = jsyaml.safeDump(git);
+											if (!git.last) git.last = {}
+											git.last[code.file.id] = content.sha;
 
-									gapi.client.request({
-										path: "/upload/drive/v3/files/" + code.script.id,
-										method: "PATCH",
-										params: {uploadType: "media"},
-										body: JSON.stringify({files: code.script.files}),
-									}).then(function() {
+											// -- Write back to .git object -- //
+											git.log.push({
+												name : "Clone",
+												when : new Date().toISOString(),
+												sha : content.sha,
+												url : content.htmlUrl
+											});
 
-										nav.busy(_id).change(_id, "status-committed", 5000);
-										// nav.reload(code.script);
+											code.git().source = jsyaml.safeDump(git);
+											code.script.files[code.index].source = atob(content.content);
+											console.log("CODE", code.script.files[code.index].source);
+											
+											gapi.client.request({
+												path: "/upload/drive/v3/files/" + code.script.id,
+												method: "PATCH",
+												params: {uploadType: "media"},
+												body: JSON.stringify({files: code.script.files}),
+											}).then(function() {
+
+												nav.busy(_id).reload(code.script);
+
+											}, function(err) {
+
+												if (debug) console.log("SAVING ERROR", err);
+												nav.busy(_id).error(_id, err);
+
+											});
+
+										}
 
 									}, function(err) {
 
-										if (debug) console.log("SAVING ERROR", err);
-										nav.busy(_id).error(_id, err);
+											if (debug) console.log("GITHUB GET CONTENT ERROR", err);
+											nav.busy(_id).error(_id, err);
 
 									});
 
-								}, function(err) {
+							} else if (_direction == "COMMIT") {
 
-									if (debug) console.log("GITHUB COMMIT ERROR", err);
-									nav.busy(_id).error(_id, err);
+								var parameters = {
+									content: btoa(code.file.source),
+								};
+
+								// From: http://stackoverflow.com/questions/7225313/how-does-git-compute-file-hashes
+								var _sha = shash.hex("blob " + code.file.source.length + "\0" + code.file.source);
+
+								if (!git.last || !git.last[code.file.id]) { // Creating
+									parameters.message = "Creating " + code.file.name + " [" + code.file.id + "]";
+								} else if (_sha != git.last[code.file.id]) { // Updating
+									parameters.message = "Updating " + code.file.name + " [" + code.file.id + "]";
+									parameters.sha = git.last[code.file.id];
+								}
+
+								if (parameters.message) {
+
+									octo.repos(_repo_Owner, _repo_Name).contents(code.file.name)
+										.add(parameters).then(function(info) {
+
+											// -- Write back to .git object -- //
+											if (!git.last) git.last = {}
+											git.last[code.file.id] = info.content.sha;
+											git.log.push({
+												name : "Commit",
+												when : new Date().toISOString(),
+												sha : info.commit.sha,
+												url : info.commit.htmlUrl,
+												message : info.commit.message,
+											});
+
+											code.git().source = jsyaml.safeDump(git);
+
+											gapi.client.request({
+												path: "/upload/drive/v3/files/" + code.script.id,
+												method: "PATCH",
+												params: {uploadType: "media"},
+												body: JSON.stringify({files: code.script.files}),
+											}).then(function() {
+
+												nav.busy(_id).change(_id, "status-committed", 5000);
+												// TODO: Should really update .git object display?
+												
+											}, function(err) {
+
+												if (debug) console.log("SAVING ERROR", err);
+												nav.busy(_id).error(_id, err);
+
+											});
+
+										}, function(err) {
+
+											if (debug) console.log("GITHUB COMMIT ERROR", err);
+											nav.busy(_id).error(_id, err);
+
+										}
+
+									);
 
 								}
-							);
+
+							}
 							
 						} else {
 							
@@ -901,7 +988,7 @@ $(function() {
 							nav.busy(_id);
 							
 						}
-								
+	
 					}
 
 				}
@@ -914,9 +1001,7 @@ $(function() {
 		} else {
 			
 			// Show details of Github Repositories
-			hello("github").login({force: _force, scope: "basic, gist, repo"}).then(function(a) {
-				
-				_force = false;
+			hello("github").login({force: false, scope: "basic, gist, repo"}).then(function(a) {
 				
 				if (debug) console.log("GITHUB LOGIN", a);
 				
@@ -1039,9 +1124,7 @@ $(function() {
 				
 				if (git.last[_id]) {
 					
-					hello("github").login({force: _force, scope: "basic, gist, repo"}).then(function(a) {
-				
-						_force = false;
+					hello("github").login({force: false, scope: "basic, gist, repo"}).then(function(a) {
 						
 						if (debug) console.log("GITHUB LOGIN", a);
 
@@ -1054,7 +1137,7 @@ $(function() {
 									.fetch().then(function(file) {
 
 							// -- Display the Diff -- //
-							showDiff(_earlier, Base64.decode(file.content));
+							showDiff(_earlier, atob(file.content));
 
 							nav.busy(_id);
 
@@ -1191,7 +1274,6 @@ $(function() {
 			};
 			
 			if (signed_in(hello("github").getAuthResponse())) {
-				_force = true;
 				hello("github").logout().then(function() {
 					if (debug) console.log("LOGGED OUT OF GITHUB");
 				}, function(err) {

@@ -2,6 +2,8 @@
 TODO LIST 
 =========
 
+* Two-Way Github Sync -- Just Line 659 in Home.js to DO!
+
 Complete
 --------
 * What happens if we try to remove the _last_ file from a script?? | Get a 500 Error (good test for error handling) <-- DONE
@@ -36,5 +38,7 @@ Complete
 * Why does Oktocat not call error functions on then()? Swapped to Native Promises (now does) <-- DONE
 * Finish GitHub Functionality [Use .git file to store properties in YAML] <-- DONE
 * Write detailed instructions -> DETAILS.md <-- DONE
+* Change CTRL-X binding to CTRL-SHIFT-X <-- DONE
+* Double Check all keyboard shortcuts are consistent... <-- DONE
 
 ᕕ( ᐛ )ᕗ JD ♑ - 2016-11-27

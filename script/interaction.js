@@ -41,14 +41,18 @@ Interaction = function() {
 					case 37: // Left Arrow - Pull Out Navigator
 						e.preventDefault(); _navigator.show(); break;
 					case 38: // Up Arrow - Go to Full Screen Mode
-						e.preventDefault();
-						if (screenfull.enabled && !screenfull.isFullscreen) screenfull.request();
+						if (screenfull.enabled && !screenfull.isFullscreen) {
+							e.preventDefault();
+							screenfull.request();
+						}
 						break;
 					case 39: // Right Arrow - Push Away Navigator
 						e.preventDefault(); _navigator.hide(); break;
 					case 40: // Down Arrow - Exit out of Full Screen Mode
-						e.preventDefault();
-						if (screenfull.enabled && screenfull.isFullscreen) screenfull.exit();
+						if (screenfull.enabled && screenfull.isFullscreen) {
+							e.preventDefault();
+							screenfull.exit();
+						}
 						break;
 					case 66: // B = Add (HTML) File to Script
 						e.preventDefault(); _functions.create(e.shiftKey); break;
@@ -61,9 +65,13 @@ Interaction = function() {
 					case 81: // Q - Remove File from Script
 						e.preventDefault(); _functions.remove(); break;
 					case 83: // S - Save
-						e.preventDefault(); _functions.save(e.shiftKey);  break;
+						e.preventDefault(); _functions.save(e.shiftKey); break;
 					case 88: // X - Abandon Local Changes from Script
-						e.preventDefault(); _functions.abandon(); break;
+						if (e.shiftKey) {
+							e.preventDefault();
+							_functions.abandon();
+						}
+						break;
 					case 219: // [ - Change Theme/Font (Cycle Backwards)
 						e.preventDefault();
 						if (e.shiftKey) { // Shift Pressed, so change Font instead
@@ -139,10 +147,10 @@ Interaction = function() {
 			_editor.changeFont(false); // Change Font (Forwards)
 		});
 		
-		_editor.addCommand("Change Theme", "Ctrl-]", "Command-]", function() {
+		_editor.addCommand("Change Theme", "Ctrl-[", "Command-[", function() {
 			_editor.changeTheme(true); // Change Theme (Reverse)
 		});
-		_editor.addCommand("Change Theme", "Ctrl-[", "Command-]", function() {
+		_editor.addCommand("Change Theme", "Ctrl-]", "Command-]", function() {
 			_editor.changeTheme(false); // Change Theme (Forwards)
 		});
 		
@@ -157,7 +165,7 @@ Interaction = function() {
 			_functions.remove();
 		});
 		
-		_editor.addCommand("Abandon Local File Changes from Script", "Ctrl-X", "Command-X", function() {
+		_editor.addCommand("Abandon Local File Changes from Script", "Ctrl-Shift-X", "Command-Shift-X", function() {
 			_functions.abandon();
 		});
 		
@@ -169,18 +177,32 @@ Interaction = function() {
 		// -- Action Editor Shortcuts -- //
 
 		// -- Further Show Editor Shortcuts -- //
-		_editor.addCommand("Show Instructions", "Alt-I", "Alt-I", function() {_show(_help.instructions)});
-		_editor.addCommand("Show Readme", "Alt-R", "Alt-R", function() {_show(_help.instructions)});
+		_editor.addCommand("Show Instructions", "Alt-I", "Option-I", function() {_show(_help.instructions)});
+		_editor.addCommand("Show Readme", "Alt-R", "Option-R", function() {_show(_help.instructions)});
 		
-		_editor.addCommand("Show License", "Alt-L", "Alt-L", function() {_show(_help.license)});
+		_editor.addCommand("Show License", "Alt-L", "Option-L", function() {_show(_help.license)});
 
-		_editor.addCommand("Show Shortcuts", "Alt-S", "Alt-S", function() {_show(_help.shortcuts)});
+		_editor.addCommand("Show Shortcuts", "Alt-S", "Option-S", function() {_show(_help.shortcuts)});
 
-		_editor.addCommand("Show To-Do", "Alt-T", "Alt-T", function() {_show(_help.todo)});
+		_editor.addCommand("Show To-Do", "Alt-T", "Option-T", function() {_show(_help.todo)});
 		
-		_editor.addCommand("Show Detailed Instructions", "Alt-D", "Alt-D", function() {_show(_help.details)});
+		_editor.addCommand("Show Detailed Instructions", "Alt-D", "Option-D", function() {_show(_help.details)});
 		// -- Further Show Editor Shortcuts -- //
 
+		
+		// -- Test Command -- //
+		_editor.addCommand("Test Command", "Ctrl-Y", "Command-Y", function () {
+			var request = gapi.client.drive.files.get({
+					fileId : "1AD15F6321C6BEE965F72B61A2CBD895"//, mimeType: "application/vnd.google-apps.script+json"
+				}).then(function(response) {
+						console.log("RESPONSE:", response);
+					}, function(err) {
+						if (_debug) console.log("LOAD ERROR", err);
+					});
+		});
+		// -- Test Command -- //
+		
+		
 	}
 
 	var _enableTouchEvents = function() {
