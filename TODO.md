@@ -2,7 +2,7 @@
 TODO LIST 
 =========
 
-* Two-Way Github Sync -- Just Line 659 in Home.js to DO!
+* Handle COMPLETE Clone Sync from Github including addition of new files??
 
 Complete
 --------
@@ -40,5 +40,6 @@ Complete
 * Write detailed instructions -> DETAILS.md <-- DONE
 * Change CTRL-X binding to CTRL-SHIFT-X <-- DONE
 * Double Check all keyboard shortcuts are consistent... <-- DONE
+* Two-Way Github Sync -- Just Line 659 in Home.js to DO! <-- DONE
 
 ᕕ( ᐛ )ᕗ JD ♑ - 2016-11-27

@@ -54,6 +54,22 @@ Interaction = function() {
 							screenfull.exit();
 						}
 						break;
+					case 48: // 0 - Change Theme/Font (Cycle Forwards)
+						e.preventDefault();
+						if (e.shiftKey) { // Shift Pressed, so change Font instead
+							_editor.changeFont(false);
+						} else { // Change There
+							_editor.changeTheme(false);
+						}
+						break;
+					case 57: // 9 - Change Theme/Font (Cycle Backwards)
+						e.preventDefault();
+						if (e.shiftKey) { // Shift Pressed, so change Font instead
+							_editor.changeFont(true);
+						} else { // Change There
+							_editor.changeTheme(true);
+						}
+						break;
 					case 66: // B = Add (HTML) File to Script
 						e.preventDefault(); _functions.create(e.shiftKey); break;
 					case 71: // G - (Custom) Commit to Github
@@ -70,22 +86,6 @@ Interaction = function() {
 						if (e.shiftKey) {
 							e.preventDefault();
 							_functions.abandon();
-						}
-						break;
-					case 219: // [ - Change Theme/Font (Cycle Backwards)
-						e.preventDefault();
-						if (e.shiftKey) { // Shift Pressed, so change Font instead
-							_editor.changeFont(true);
-						} else { // Change There
-							_editor.changeTheme(true);
-						}
-						break;
-					case 221: // ] - Change Theme/Font (Cycle Forwards)
-						e.preventDefault();
-						if (e.shiftKey) { // Shift Pressed, so change Font instead
-							_editor.changeFont(false);
-						} else { // Change There
-							_editor.changeTheme(false);
 						}
 						break;
 					default: return; // Exit Handler
@@ -140,17 +140,17 @@ Interaction = function() {
 		_editor.addCommand("Diff Script to Github", "Ctrl-Shift-M", "Command-Shift-M",
 											 function() {_functions.diff(true)});
 		
-		_editor.addCommand("Change Font", "Ctrl-Shift-[", "Command-Shift-[", function() {
+		_editor.addCommand("Change Font", "Ctrl-Shift-9", "Command-Shift-9", function() {
 			_editor.changeFont(true); // Change Font (Reverse)
 		});
-		_editor.addCommand("Change Font", "Ctrl-Shift-]", "Command-Shift-]", function() {
+		_editor.addCommand("Change Font", "Ctrl-Shift-0", "Command-Shift-0", function() {
 			_editor.changeFont(false); // Change Font (Forwards)
 		});
 		
-		_editor.addCommand("Change Theme", "Ctrl-[", "Command-[", function() {
+		_editor.addCommand("Change Theme", "Ctrl-9", "Command-9", function() {
 			_editor.changeTheme(true); // Change Theme (Reverse)
 		});
-		_editor.addCommand("Change Theme", "Ctrl-]", "Command-]", function() {
+		_editor.addCommand("Change Theme", "Ctrl-0", "Command-0", function() {
 			_editor.changeTheme(false); // Change Theme (Forwards)
 		});
 		

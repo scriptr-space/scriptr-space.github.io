@@ -5,6 +5,7 @@ Key: ChromeOS / Win / Linux | Mac  ==>   ⌨ | 🍏
 
 General
 -------
+* Overlay editor settings               ==>     __[CTRL | ⌘] + ,__
 * Overlay Shortcuts in the editor       ==>     __[CTRL ALT | ⌘ ALT] + H__
 
 Line Operations
