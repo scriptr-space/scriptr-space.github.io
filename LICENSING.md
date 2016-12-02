@@ -20,6 +20,7 @@ Attributions
     + JQuery URL Parser
     + Node-UUID
     + ACE
+    + Octokat
 
   [1]: https://fonts.google.com/ "Google Fonts"
   [2]: http://www.gnu.org/licenses/gpl.html "GNU GPL v3 Licence Terms"
