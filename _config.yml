@@ -24,7 +24,7 @@ permalink:						pretty
 title:                Scriptr
 byline:								""
   
-description:					"A web-based tool for Google Apps Scripts. Better editing, local storage, saving, diff'ing & committing to Github. Built on Ace for speed, familiarity & ease of use."
+description:					"A web-based tool for Google Apps Scripts. Better editing, local storage, saving, diff'ing & committing to Github. Built atop of Ace for speed & ease of use."
 url:									scriptr.space
 baseurl:							/
 author:

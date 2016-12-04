@@ -1,5 +1,12 @@
 {
- "name": "App",
+ "short_name": "Scriptr",
+ "name": "Scriptr.space",
+ "description": "A web-based tool for Google Apps Scripts. Better editing, local storage, saving, diff'ing & committing to Github. Built atop of Ace for speed & ease of use.",
+ "start_url": "/index.html",
+ "display": "fullscreen",
+ "orientation": "landscape",
+ "lang": "en-GB",
+ "theme_color": "black",
  "icons": [
   {
    "src": "\/android-icon-36x36.png",
