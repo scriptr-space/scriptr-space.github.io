@@ -203,12 +203,17 @@ Navigator = function() {
 		} else {
 						
 			// -- Handle Visuals -- //
-			_navigator.find("li a, li input").removeClass("current")
+			var position = _editor.getPosition();
+			_navigator.find("li a.current, li input.current")
+				.data("pos-row", position.row)
+				.data("pos-col", position.column)
+				.removeClass("current");
 			element.addClass("current");
 
 			// -- Handle OnLoad -- //
 			if (_onLoad) _onLoad(script.name + " > " + file.name, 
-													 file.source, script, file, files, index);
+													 file.source, script, file, files, index, false, true,
+													 element.data("pos-row"), element.data("pos-col"));
 						
 		}
 		

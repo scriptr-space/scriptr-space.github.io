@@ -177,6 +177,24 @@ Editor = function() {
 			return this; // -- Return for Chaining -- //
 		},
 		
+		getPosition : function() {
+			if (_editor.selection && _editor.selection.lead) {
+				return {
+					row : (_editor.selection.lead.row ? _editor.selection.lead.row : 0), 
+				  column : (_editor.selection.lead.column ? _editor.selection.lead.column : 0), 
+				};
+			} else {
+				return {
+					row : 0, column : 0, 
+				};
+			}
+		},
+		
+		setPosition : function(row, column) {
+			_editor.gotoLine(row + 1, column, true);
+			return this; // -- Return for Chaining -- //
+		},
+		
 		getValue : function() {
 			
 			return _getValue();

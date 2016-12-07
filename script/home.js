@@ -72,7 +72,7 @@ $(function() {
 
 	}
 
-	var loaded = function(name, value, script, file, files, index, interaction, editable) { // -- Handles a loaded file/script -- //
+	var loaded = function(name, value, script, file, files, index, interaction, editable, row, col) { // -- Handles a loaded file/script -- //
 
 		$("#path").empty().append($("<span />", {
 			text: name
@@ -82,7 +82,7 @@ $(function() {
 		if (interaction) {
 
 			if (editable) {
-				editor.setValue(value, editor.Modes.interact, undefined).unprotect().focus(); // Set it to read-only
+				editor.setValue(value, editor.Modes.interact, undefined).unprotect().focus(); // Set it to read-write
 			} else {
 				editor.setValue(value, editor.Modes.interact, undefined).protect().focus(); // Set it to read-only	
 			}
@@ -131,6 +131,8 @@ $(function() {
 			editor.setValue(value, editor.Modes.markdown, undefined).protect().focus(); // Set it to read-only
 
 		}
+		
+		editor.setPosition(row ? row : 0, col ? col : 0);
 
 	}
 

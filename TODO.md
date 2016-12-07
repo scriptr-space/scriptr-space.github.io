@@ -3,6 +3,7 @@ TODO LIST
 =========
 
 * Handle COMPLETE Clone Sync from Github including addition of new files??
+* Bug on IOS Home-Screen App pinning (after auth, nothing happens :[<])
 
 Complete
 --------
@@ -41,5 +42,6 @@ Complete
 * Change CTRL-X binding to CTRL-SHIFT-X <-- DONE
 * Double Check all keyboard shortcuts are consistent... <-- DONE
 * Two-Way Github Sync -- Just Line 659 in Home.js to DO! <-- DONE
+* Would be nice to return to line number on a particular file when editing? Perhaps store as a data attribute on the LI? <-- DONE
 
 ᕕ( ᐛ )ᕗ JD ♑ - 2016-11-27
