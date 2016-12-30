@@ -14,6 +14,7 @@ Interaction = function() {
 		shortcuts : {name : "General > Shortcuts", source : "SHORTCUTS.md"},
 		todo : {name : "General > ToDo", source : "TODO.md"},
 		details : {name : "General > Detailed Instructions", source : "DETAILS.md"},
+		versions : {name : "General > Versions", source : "VERSIONS.md"},
 	};
 	// -- Internal Enums -- //
 	
@@ -104,6 +105,8 @@ Interaction = function() {
 						e.preventDefault(); _show(_help.shortcuts); break;
 					case 84: // T - To-Do
 						e.preventDefault(); _show(_help.todo); break;
+					case 118: // V - Versions
+						e.preventDefault(); _show(_help.versions); break;
 					default: return; // Exit Handler
 				}
 			}
@@ -187,6 +190,8 @@ Interaction = function() {
 		_editor.addCommand("Show To-Do", "Alt-T", "Option-T", function() {_show(_help.todo)});
 		
 		_editor.addCommand("Show Detailed Instructions", "Alt-D", "Option-D", function() {_show(_help.details)});
+		
+		_editor.addCommand("Show Versions", "Alt-V", "Option-V", function() {_show(_help.versions)});
 		// -- Further Show Editor Shortcuts -- //
 
 		

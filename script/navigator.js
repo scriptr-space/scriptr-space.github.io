@@ -1,6 +1,6 @@
 Navigator = function() {
 
-  // -- Returns an instance of Editor if required -- //
+  // -- Returns an instance of Navigator if required -- //
   if (!(this instanceof Navigator)) {return new Navigator();}
 
 	// -- JQuery Plugins -- //
@@ -53,37 +53,36 @@ Navigator = function() {
 		if (container.children("ul").length === 0) {
 			
 			container.busy("load");
-
-			var request = gapi.client.drive.files.export({
-					fileId : script.id, mimeType: "application/vnd.google-apps.script+json"
-				}).then(function(response) {
-						if (response.result && response.result.files) {
+		
+			global.google.export(script.id).then(function(response) {
+				
+				if (response && response.files) {
 							
-							var files = response.result.files.sort(function(a, b) {
-								return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
-							});
-							
-							_appendFiles(container, script, files);
-							if (select) {
-								var file;
-								_navigator.find("li a, li input").removeClass("current");
-								if (new_File_Name) {
-									file = files.find(function(f) {return f.name == new_File_Name;})
-								} else {
-									file = files[files.length - 1];
-								}
-								_navigator.find("#" + file.id + " a").addClass("current");
-								if (_onLoad) _onLoad(script.name + " > " + 
-																		 file.name, file.source, script, file, files, files.indexOf(file));
-							}
-						} else {
-							if (container.isBusy()) container.busy();
-						}
-					}, function(err) {
-						if (container.isBusy()) container.busy();
-						container.err(err);
-						if (_debug) console.log("LOAD ERROR", err);
+					var files = response.files.sort(function(a, b) {
+						return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
 					});
+							
+					_appendFiles(container, script, files);
+					if (select) {
+						var file;
+						_navigator.find("li a, li input").removeClass("current");
+						if (new_File_Name) {
+							file = files.find(function(f) {return f.name == new_File_Name;})
+						} else {
+							file = files[files.length - 1];
+						}
+						_navigator.find("#" + file.id + " a").addClass("current");
+						if (_onLoad) _onLoad(script.name + " > " + 
+															 		file.name, file.source, script, file, files, files.indexOf(file));
+					}
+				} else {
+					if (container.isBusy()) container.busy();
+				}
+			}, function(err) {
+				if (container.isBusy()) container.busy();
+				container.err(err);
+				if (_debug) console.log("LOAD ERROR", err);
+			});
 			
 		} else {
 				
@@ -149,12 +148,7 @@ Navigator = function() {
 					// -- Rename -- //
 					_a.parent().busy("save");
 					
-					gapi.client.request({
-						path: "/upload/drive/v3/files/" + script.id,
-						method: "PATCH",
-						params: {uploadType: "media"},
-						body: JSON.stringify({files : files}),
-					}).then(function() {
+					global.google.save(script.id, files).then(function() {
 
 						// -- Force reload -- //
 						var _element = $("#" + script.id);
@@ -252,40 +246,6 @@ Navigator = function() {
 
 	}
 
-	var _appendScripts = function(scripts) {
-		
-		scripts.forEach(function(script) {
-			
-			_navigator.append($("<li />", {
-				id: script.id,
-				title : script.description,
-				class : "script",
-			}).append($("<a />", {
-				text: script.name,
-				href: "#"
-			}).data("id", script.id).click(function(e) {
-					e.preventDefault();
-					var _parent = $(this).parent();
-					if (!_parent.isBusy()) _toggleScript(_parent, script);
-				}))
-			);
-			if (_debug) console.log("SCRIPT", script);
-		})
-	}
-
-	var _handleFileResponse = function(response) {
-		if (response.files && response.files.length > 0) _appendScripts(response.files);
-		if (response.nextPageToken) {
-			var request = gapi.client.drive.files.list({
-				q: "mimeType = 'application/vnd.google-apps.script' and trashed = false",
-				orderBy: "modifiedByMeTime desc,name",
-				fields: "files(description,id,modifiedByMeTime,name,version)",
-				pageToken: response.nextPageToken,
-			}).then(function(response) {_handleFileResponse(response.result);});
-		} else {
-			_show();
-		}
-	}
 	// -- Internal Functions -- //
 
   // -- External Visibility -- //
@@ -308,16 +268,33 @@ Navigator = function() {
 			_navigator = $("<ul />").appendTo(_element);
 
 			// -- Load Scripts from Google Drive -- //
-			gapi.client.load("drive", "v3", function() {
-				var request = gapi.client.drive.files.list({
-					q: "mimeType = 'application/vnd.google-apps.script' and trashed = false",
-					orderBy: "modifiedByMeTime desc,name",
-					fields: "files(description,id,modifiedByMeTime,name,version)",
-				}).then(function(response) {
-					_navigator.empty();
-					_handleFileResponse(response.result);
-				});
+			global.google.scripts().then(function(scripts) {
+				
+				_navigator.empty();
+				
+				// -- Show Each Script -- //
+				scripts.forEach(function(script) {
+			
+					_navigator.append($("<li />", {
+						id: script.id,
+						title : script.description,
+						class : "script",
+					}).append($("<a />", {
+						text: script.name,
+						href: "#"
+					}).data("id", script.id).click(function(e) {
+							e.preventDefault();
+							var _parent = $(this).parent();
+							if (!_parent.isBusy()) _toggleScript(_parent, script);
+						}))
+					);
+					global.flags.log("SCRIPT", script);
+				})
+				
+				_show();
+				
 			});
+			
 			// -- Create & Append Navigator -- //
 			
 			// -- Return for Chaining -- //

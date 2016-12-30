@@ -1,5 +1,4 @@
 ---
-layout: page
+layout: auth
 permalink: /redirect/
-scripts: redirect.js
 ---

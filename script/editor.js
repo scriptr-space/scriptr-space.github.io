@@ -65,7 +65,7 @@ Editor = function() {
   // -- Internal Enums -- //
 
   // -- Internal Variables -- //
-  var _id = uuid.v4(), _debug = false, Document;
+  var _id = uuid.v4(), Document;
 	var _element, _editor, _session, _mode;
   // -- Internal Variables -- //
   
@@ -130,10 +130,7 @@ Editor = function() {
     // -- External Enums -- //
     
     // -- External Functions -- //
-    initialise : function(appendTo, debug) {
-			
-			// -- Set Debug -- //
-			if (debug) _debug = true;
+    initialise : function(appendTo) {
 			
 			// -- Create/Append Editor Holding Element -- //
 			_element = $("<div />", {id : _id}).appendTo(appendTo);
@@ -237,7 +234,6 @@ Editor = function() {
 			}); // Enable Edit Triggers
 			
 			// Enable Emmet for HTML Editing
-			if (_debug) console.log("SETTING EMMET MODE:", _mode.mode == "ace/mode/html"); // Log Emmet Mode
 			_editor.setOption("enableEmmet", _mode.mode == "ace/mode/html");
 			
 			// -- Got to original spot -- //
@@ -258,7 +254,7 @@ Editor = function() {
 			} else {
 				_fonts.push(_fonts.shift()); // Cycle Fonts (forwards)
 			}
-			if (_debug) console.log("CHANGING FONT:", _fonts[_fonts.length - 1], " --> ", _fonts[0]); // Log Font
+			global.flags.log("CHANGING FONT:", _fonts[_fonts.length - 1], " --> ", _fonts[0]); // Log Font
 			_element.css("font-family", _fonts.join(",")); // Set Fonts
 			return this; // -- Return for Chaining -- //
 		},
@@ -269,7 +265,7 @@ Editor = function() {
 			} else {
 				_Themes.push(_Themes.shift()); // Cycle Themes (forwards)
 			}
-			if (_debug) console.log("CHANGING THEME:", _Themes[_Themes.length - 1].name, " --> ", _Themes[0].name); // Log Theme
+			global.flags.log("CHANGING THEME:", _Themes[_Themes.length - 1].name, " --> ", _Themes[0].name); // Log Theme
 			_editor.setTheme(_Themes[0].value); // Set Theme
 			return this; // -- Return for Chaining -- //
 		},
