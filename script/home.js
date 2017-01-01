@@ -33,6 +33,10 @@ $(function() {
 	};
 	
 	var google_SignOut = function() {
+		
+		// -- Save Customised Settings -- //
+		global.editor.saveSettings();
+		
 		hello.logout("google").then(function(a) {
 			global.flags.log("Signed out of Google", a);
 		}, function(e) {
@@ -51,52 +55,60 @@ $(function() {
 	
 	var google_LoggedIn = function(auth) {
 		
-		global.google = Google().initialise(auth.access_token, auth.token_type);
-		
-		// -- Get User Info for Display -- //
-		global.google.me().then(function(user) {
+		if (!global.google) {
+			
+			// -- Load Customised Settings -- //
+			global.editor.loadSettings();
 
-			// -- Variables for Display -- //
-			var n = user.name, e = user.email;
+			// -- Initialise Google Provider -- //
+			global.google = Google().initialise(auth.access_token, auth.token_type);
 
-			// -- Add the Auth Form -- //
-			var authorise = $("<form />", {
-				id: "authorise", class : "navbar-form", role : "form"
-			}).appendTo($("#authorisation").empty());
+			// -- Get User Info for Display -- //
+			global.google.me().then(function(user) {
 
-			// -- Form Group to Contain Controls -- //
-			var group = $("<div />", {class : "form-group"}).appendTo(authorise);
+				// -- Variables for Display -- //
+				var n = user.name, e = user.email;
 
-			// -- Signed in as Info -- //
-			$("<p />", {id : "user", class : "navbar-text", text : "Signed in as"}).append($("<a />", {
-				id : "user_details", class : "navbar-link username", text : n, target : "_blank",
-				href : "https://security.google.com/settings/security/permissions",
-				title : "To remove from your account (" + e + "), click & follow instructions"})).appendTo(group);
+				// -- Add the Auth Form -- //
+				var authorise = $("<form />", {
+					id: "authorise", class : "navbar-form", role : "form"
+				}).appendTo($("#authorisation").empty());
 
-			// -- Logout Button with Logic -- //
-			$("<button />", {
-				id : "logout", class : "btn btn-primary btn-sm", text : "Sign Out", href : "#",
-				title : "Click here to log out of this site, but keep the app authorised on your account",
-			}).click(function(e) {e.preventDefault(); google_SignOut();}).appendTo(authorise);
+				// -- Form Group to Contain Controls -- //
+				var group = $("<div />", {class : "form-group"}).appendTo(authorise);
 
-			// Anchor the Container to below the navbar
-			global.container.css("top", $("nav.navbar").height());
+				// -- Signed in as Info -- //
+				$("<p />", {id : "user", class : "navbar-text", text : "Signed in as"}).append($("<a />", {
+					id : "user_details", class : "navbar-link username", text : n, target : "_blank",
+					href : "https://security.google.com/settings/security/permissions",
+					title : "To remove from your account (" + e + "), click & follow instructions"})).appendTo(group);
 
-			// -- Create & Append Navigator, then Interaction -- //
-			// -- Enable Navigator, Interaction, Load Initial Help & Instructions Document -- //
-			if (!global.navigator) global.navigator = Navigator().initialise(
-				global.container, global.editor, global.app.status, 
-				global.app.loaded, global.app.clear, global.app.force, global.flags.debug);
+				// -- Logout Button with Logic -- //
+				$("<button />", {
+					id : "logout", class : "btn btn-primary btn-sm", text : "Sign Out", href : "#",
+					title : "Click here to log out of this site, but keep the app authorised on your account",
+				}).click(function(e) {e.preventDefault(); google_SignOut();}).appendTo(authorise);
 
-			if (!global.interaction) global.interaction = Interaction().initialise(
-				window, global.editor, global.navigator, {
-					"save" : global.app.save, "diff" : global.app.diff,
-					"load" : global.app.loaded, "remove" : global.app.remove,
-					"create" : global.app.create, "commit" : global.app.commit,
-					"abandon" : global.app.abandon
-				}, global.flags.debug);
+				// Anchor the Container to below the navbar
+				global.container.css("top", $("nav.navbar").height());
 
-		});
+				// -- Create & Append Navigator, then Interaction -- //
+				// -- Enable Navigator, Interaction, Load Initial Help & Instructions Document -- //
+				if (!global.navigator) global.navigator = Navigator().initialise(
+					global.container, global.editor, global.app.status, 
+					global.app.loaded, global.app.clear, global.app.force, global.flags.debug);
+
+				if (!global.interaction) global.interaction = Interaction().initialise(
+					window, global.editor, global.navigator, {
+						"save" : global.app.save, "diff" : global.app.diff,
+						"load" : global.app.loaded, "remove" : global.app.remove,
+						"create" : global.app.create, "commit" : global.app.commit,
+						"abandon" : global.app.abandon
+					}, global.flags.debug);
+
+			});
+			
+		}
 		
 	};
 	
@@ -106,7 +118,10 @@ $(function() {
 	
 	var google_LoggedOut = function() {
 		
+		// -- Delete Objects dependent on being Logged in -- //
 		delete global.google;
+		delete global.navigator
+		delete global.interaction
 		
 		$("<form />", {id: "authorise", class: "navbar-form", role: "form"})
 		.append($("<button />", {

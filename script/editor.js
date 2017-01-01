@@ -249,6 +249,7 @@ Editor = function() {
 
 		changeFont : function(reverse) {
 			var _fonts = _element.css("font-family").split(","); // Get Fonts
+			
 			if (reverse) {
 				_fonts.unshift(_fonts.pop()) // Cycle Fonts (reverse)
 			} else {
@@ -256,6 +257,7 @@ Editor = function() {
 			}
 			global.flags.log("CHANGING FONT:", _fonts[_fonts.length - 1], " --> ", _fonts[0]); // Log Font
 			_element.css("font-family", _fonts.join(",")); // Set Fonts
+			
 			return this; // -- Return for Chaining -- //
 		},
 
@@ -268,6 +270,52 @@ Editor = function() {
 			global.flags.log("CHANGING THEME:", _Themes[_Themes.length - 1].name, " --> ", _Themes[0].name); // Log Theme
 			_editor.setTheme(_Themes[0].value); // Set Theme
 			return this; // -- Return for Chaining -- //
+		},
+		
+		loadSettings : function() {
+			
+			if (global.settings) {
+				
+				// -- Load Settings -- //
+				Promise.all([
+					global.settings.getItem("fonts"),
+					global.settings.getItem("themes"),
+				]).then(function(settings) {
+					
+					if (settings) {
+						
+						if (settings[0]) _element.css("font-family", settings[0]);
+						if (settings[1]) {
+							_Themes = settings[1];
+							_editor.setTheme(_Themes[0].value);
+						}
+						
+					}
+					
+				}).catch(function(e) {
+					global.flags.error("Settings Save Error", e);
+				});
+				
+			}
+			
+		},
+		
+		saveSettings : function() {
+			
+			if (global.settings) {
+				
+				// -- Save Settings -- //
+				Promise.all([
+					global.settings.setItem("fonts", _element.css("font-family")),
+					global.settings.setItem("themes", _Themes),
+				]).then(function() {
+					_start();
+				}).catch(function(e) {
+					global.flags.error("Settings Save Error", e);
+				});
+				
+			}
+			
 		},
 
 		changeWidth : function(width) {

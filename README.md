@@ -9,8 +9,7 @@ Key: ChromeOS / Win / Linux | Mac || Touch || Repeat  ==>   ⌨ | 🍏 || ☝ ||
 
 Basic Keyboard Actions
 ----------------------
-* Cycle through available Themes          ==>     __[CTRL | ⌘] + 9 / 0__
-* Cycle through available Fonts           ==>     __[CTRL SHIFT | ⌘ SHIFT] + 9 / 0__
+* Cycle through available (Fonts) Themes  ==>     __(SHIFT) + [CTRL | ⌘] + 8 / 9__
 * Pull out Navigator                      ==>     __[CTRL | ⌘] + Left || Swipe Left__
 * Push away Navigator                     ==>     __[CTRL | ⌘] + Right || Swipe Right__
 * Go Full Screen                          ==>     __[CTRL | ⌘] + Up || Pinch Out__

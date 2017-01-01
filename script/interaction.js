@@ -55,7 +55,8 @@ Interaction = function() {
 							screenfull.exit();
 						}
 						break;
-					case 48: // 0 - Change Theme/Font (Cycle Forwards)
+					case 56: // 8 - Change Theme/Font (Cycle Forwards)
+						console.log("BLAH")
 						e.preventDefault();
 						if (e.shiftKey) { // Shift Pressed, so change Font instead
 							_editor.changeFont(false);
@@ -143,17 +144,17 @@ Interaction = function() {
 		_editor.addCommand("Diff Script to Github", "Ctrl-Shift-M", "Command-Shift-M",
 											 function() {_functions.diff(true)});
 		
-		_editor.addCommand("Change Font", "Ctrl-Shift-9", "Command-Shift-9", function() {
+		_editor.addCommand("Change Font", "Ctrl-Shift-8", "Command-Shift-8", function() {
 			_editor.changeFont(true); // Change Font (Reverse)
 		});
-		_editor.addCommand("Change Font", "Ctrl-Shift-0", "Command-Shift-0", function() {
+		_editor.addCommand("Change Font", "Ctrl-Shift-9", "Command-Shift-9", function() {
 			_editor.changeFont(false); // Change Font (Forwards)
 		});
 		
-		_editor.addCommand("Change Theme", "Ctrl-9", "Command-9", function() {
+		_editor.addCommand("Change Theme", "Ctrl-8", "Command-8", function() {
 			_editor.changeTheme(true); // Change Theme (Reverse)
 		});
-		_editor.addCommand("Change Theme", "Ctrl-0", "Command-0", function() {
+		_editor.addCommand("Change Theme", "Ctrl-9", "Command-9", function() {
 			_editor.changeTheme(false); // Change Theme (Forwards)
 		});
 		

@@ -5,9 +5,9 @@ TODO LIST
 * Handle COMPLETE Clone Sync from Github including addition of new files??
 * Gracefully handle Google Drive token expiration ...
 * BUG - no splash screens showing on IOS? | https://forums.developer.apple.com/thread/23924 & http://stackoverflow.com/questions/31471603/ios-9-status-bar-meta-tag-and-startup-image-links-not-working
-* Make IOS Homescreen Icons a lot better...
 * Touch controls - including full screen menu for small screens?
-* Save Visual Settings (font & themes)
+* Right click menu for navigator
+* Global code store object and background updates
 
 Complete
 --------
@@ -51,5 +51,8 @@ Complete
 * BUG - IOS Home-Screen App pinning (after auth, nothing happens :[<]) ... redirection issue <-- This is going to need a GAPI removal and auth flow re-write. <-- DONE
 * Sign In doesn't trigger NAVIGATOR? <-- DONE
 * Auth flow is broken on IOS <-- DONE
+* Sign in doesn't trigger Drive Load? <-- DONE
+* Make IOS Homescreen Icons a lot better... <-- DONE
+* Save Visual Settings (font & themes) upon Sign Out <-- DONE
 
 ᕕ( ᐛ )ᕗ JD ♑ - 2016-12-30
