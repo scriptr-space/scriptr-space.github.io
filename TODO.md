@@ -6,8 +6,10 @@ TODO LIST
 * Gracefully handle Google Drive token expiration ...
 * BUG - no splash screens showing on IOS? | https://forums.developer.apple.com/thread/23924 & http://stackoverflow.com/questions/31471603/ios-9-status-bar-meta-tag-and-startup-image-links-not-working
 * Touch controls - including full screen menu for small screens?
+* Whole screen navigator on small screen
 * Right click menu for navigator
 * Global code store object and background updates
+* Scroll Performance on IOS
 
 Complete
 --------
@@ -55,4 +57,4 @@ Complete
 * Make IOS Homescreen Icons a lot better... <-- DONE
 * Save Visual Settings (font & themes) upon Sign Out <-- DONE
 
-ᕕ( ᐛ )ᕗ JD ♑ - 2016-12-30
+ᕕ( ᐛ )ᕗ JD ♑ - 2017-01-01

@@ -146,7 +146,6 @@ Editor = function() {
 				enableLiveAutocompletion: true,
 				showPrintMargin: false,
 				theme: _Themes[0].value,
-				enableEmmet: true,
 			});
 			_editor.$blockScrolling = Infinity;
       
@@ -220,6 +219,7 @@ Editor = function() {
 			_session = ace.createEditSession(new Document(value));
 			_editor.setSession(_session);
 			_session.setTabSize(4);
+			_session.setUseSoftTabs(true);
 			_session.setUseWrapMode(true);
 			_session.setWrapLimitRange();
 			_session.setMode(_mode.mode);
