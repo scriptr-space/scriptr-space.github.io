@@ -219,7 +219,7 @@ Editor = function() {
 			_session = ace.createEditSession(new Document(value));
 			_editor.setSession(_session);
 			_session.setTabSize(4);
-			_session.setUseSoftTabs(true);
+			_session.setUseSoftTabs(false);
 			_session.setUseWrapMode(true);
 			_session.setWrapLimitRange();
 			_session.setMode(_mode.mode);
@@ -232,9 +232,6 @@ Editor = function() {
 			if (afterChange) _session.on("change", function(e) {
 				afterChange(_getValue());
 			}); // Enable Edit Triggers
-			
-			// Enable Emmet for HTML Editing
-			_editor.setOption("enableEmmet", _mode.mode == "ace/mode/html");
 			
 			// -- Got to original spot -- //
 			if (_row || _col) _editor.gotoLine(_row + 1, _col, true);
