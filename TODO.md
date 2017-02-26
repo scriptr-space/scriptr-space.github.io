@@ -3,13 +3,14 @@ TODO LIST
 =========
 
 * Handle COMPLETE Clone Sync from Github including addition of new files??
-* Gracefully handle Google Drive token expiration ...
+
 * BUG - no splash screens showing on IOS? | https://forums.developer.apple.com/thread/23924 & http://stackoverflow.com/questions/31471603/ios-9-status-bar-meta-tag-and-startup-image-links-not-working
 * Touch controls - including full screen menu for small screens?
 * Whole screen navigator on small screen
 * Right click menu for navigator
 * Global code store object and background updates
 * Scroll Performance on IOS
+* Register (for automatic removal) temporary interaction commands (or handle 'states' in the Interaction.js module)
 
 Complete
 --------
@@ -56,5 +57,7 @@ Complete
 * Sign in doesn't trigger Drive Load? <-- DONE
 * Make IOS Homescreen Icons a lot better... <-- DONE
 * Save Visual Settings (font & themes) upon Sign Out <-- DONE
+* Token Expiration for Google Drive - need to handle automatically <-- DONE
+* Gracefully handle Google Drive token expiration ... <-- DONE
 
 ᕕ( ᐛ )ᕗ JD ♑ - 2017-01-01

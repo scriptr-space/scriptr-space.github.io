@@ -42,15 +42,15 @@ $(function() {
 		}, function(e) {
 			global.flags.error("Signing out of Google", e);
 		});
+		
 	};
 	
 	var is_SignedIn = function(session) {
-		var currentTime = (new Date()).getTime() / 1000;
-		return session && session.access_token && session.expires > currentTime;
+		return session && session.access_token && new Date(session.expires * 1000) >= new Date();
 	};
 	
 	var github_LoggedIn = function(auth) {
-		global.github = Github().initialise(auth.access_token, auth.token_type);	
+		global.github = Github().initialise(auth.access_token, auth.token_type, auth.expires);	
 	}
 	
 	var google_LoggedIn = function(auth) {
@@ -61,8 +61,26 @@ $(function() {
 			global.editor.loadSettings();
 
 			// -- Initialise Google Provider -- //
-			global.google = Google().initialise(auth.access_token, auth.token_type);
-
+			global.google = Google().initialise(auth.access_token, auth.token_type, auth.expires, 
+				(function(s) {
+					return function() {
+						return new Promise(function(resolve, reject) {
+							hello.login("google", {force: false, display : "none", scope : s}).then(function(r) {
+								if (r.authResponse) {
+									resolve({
+										token : r.authResponse.access_token,
+										type : r.authResponse.token_type,
+										expires : r.authResponse.expires,
+									});
+								} else {
+									resolve();
+								}
+							}, function(err) {reject(err)});
+						});
+					}
+				})(encodeURIComponent(GOOGLE_SCOPES.join(" ")))
+			);
+			
 			// -- Get User Info for Display -- //
 			global.google.me().then(function(user) {
 
@@ -103,7 +121,7 @@ $(function() {
 						"save" : global.app.save, "diff" : global.app.diff,
 						"load" : global.app.loaded, "remove" : global.app.remove,
 						"create" : global.app.create, "commit" : global.app.commit,
-						"abandon" : global.app.abandon
+						"abandon" : global.app.abandon, deploy : global.app.deploy
 					}, global.flags.debug);
 
 			});
@@ -160,6 +178,12 @@ $(function() {
 	// -- Auth Triggers -- //
 	
 	// -- Auth Handlers -- //
+	hello.on("auth.update", function(auth) {
+		
+		console.log("AUTH:", auth);
+	
+	});
+	
 	hello.on("auth.login", function (auth) {
 		
 		if (auth.network == "google") {
@@ -233,9 +257,22 @@ $(function() {
 
 				// -- Start Auth Flow -- //
 				var g = hello("google").getAuthResponse();
-				if (is_SignedIn(g)) {
+				if (is_SignedIn(g)) { // Signed In
 					google_LoggedIn(g);
-				} else {
+				} else if (g && new Date(g.expires * 1000) < new Date()) { // Expired Token
+					hello.login("google", { // Try silent token refresh
+						force: false, display : "none", scope : encodeURIComponent(GOOGLE_SCOPES.join(" ")),
+					}).then(function(a) {
+						if (is_SignedIn(a.authResponse)) {
+							google_LoggedIn(a.authResponse);
+						} else {
+							google_LoggedOut();
+						}
+					}, function(e) {
+						global.flags.error("Signed into Google", e);
+						google_LoggedOut();
+					});
+				} else { // Not Logged In
 					google_LoggedOut();
 				}
 				// -- Start Auth Flow -- //

@@ -12,16 +12,49 @@ Google = function() {
 	// -- Internal Constants -- //
 	
 	// -- Internal Variables -- //
-	var _scope, _before, _after;
+	var _check, _before, _after;
   // -- Internal Variables -- //
 	
 	// -- Internal Functions -- //
-	var _init = function(token, type) {
+	var _init = function(token, type, expires, update) {
+		
+		_check = (function(e, u) {
+
+			return function() {
+				
+				return new Promise(function(resolve, reject) {
+				
+					if (e <= new Date()) { // Token Expired
+
+						u().then(function(r) { // Update token
+
+							if (r) _init(r.token, r.type, r.expires, u); // Non-Null Response, so changes required
+							resolve();
+
+						}, function(err) {reject(err);});
+
+					} else { // Token Fine
+
+						resolve();
+
+					}
+
+				});
+				
+			}
+			
+		})(new Date((expires - 10) * 1000), update) // 10 second shift in case of network delays!
 		
 		// -- Before Ajax Call : Request Authorisation Closure -- //
-		_before = (function(t, w) {
+		_before = (function(t, w, e, u) {
+			
 			//"Authorization: token OAUTH-TOKEN"
-			return function(a) {a.setRequestHeader("Authorization", w + " " + t)};
+			return function(a, s) {
+				
+				a.setRequestHeader("Authorization", w + " " + t);
+				
+			};
+		
 		})(token, type)
 
 		// -- After Ajax Call : Do Nothing -- //
@@ -33,17 +66,21 @@ Google = function() {
 		
 		return new Promise(function(resolve, reject) {
 			
-			var s = {method : "GET", url : url, beforeSend: _before, complete: _after};
-			if (data) s.data = data;
+			_check().then(function() {
+				
+				var s = {method : "GET", url : url, beforeSend: _before, complete: _after};
+				if (data) s.data = data;
 			
-			$.ajax(s).done(function(value, status, request) {
+				$.ajax(s).done(function(value, status, request) {
 			
-				resolve(value);
-			
-			}).fail(function(status, request) {
-			
-				reject(Error(request.status + ": " + request.statusText));
-			
+					resolve(value);
+
+				}).fail(function(request) {
+
+					reject(Error(request.status + ": " + request.statusText));
+
+				});
+				
 			});
 			
 		});
@@ -54,28 +91,32 @@ Google = function() {
 		
 		return new Promise(function(resolve, reject) {
 			
-			var s = {method : "GET", url : url, beforeSend: _before, complete: _after};
-			
-			if (data) {
-				s.data = data;
-				if (next) s.data.pageToken = next;
-			} else if (next) {
-				s.data = {pageToken: next};
-			}
-			
-			$.ajax(s).done(function(value, status, request) {
+			_check().then(function() {
 				
-				list = list.concat(value[property]);
-				if (value.nextPageToken) {
-					_list(url, property, list, data, value.nextPageToken).then(function(list) {resolve(list)});
-				} else {
-					resolve(list);
+				var s = {method : "GET", url : url, beforeSend: _before, complete: _after};
+			
+				if (data) {
+					s.data = data;
+					if (next) s.data.pageToken = next;
+				} else if (next) {
+					s.data = {pageToken: next};
 				}
 				
-			}).fail(function(status, request) {
+				$.ajax(s).done(function(value, status, request) {
 				
-				reject(Error(request.status + ": " + request.statusText));
-			
+					list = list.concat(value[property]);
+					if (value.nextPageToken) {
+						_list(url, property, list, data, value.nextPageToken).then(function(list) {resolve(list)});
+					} else {
+						resolve(list);
+					}
+
+				}).fail(function(status, request) {
+
+					reject(Error(request.status + ": " + request.statusText));
+
+				})
+				
 			});
 			
 		});
@@ -86,17 +127,21 @@ Google = function() {
 		
 		return new Promise(function(resolve, reject) {
 			
-			var s = {method : "PATCH", url : url, beforeSend : _before, complete : _after,
+			_check().then(function() {
+				
+				var s = {method : "PATCH", url : url, beforeSend : _before, complete : _after,
 							 data : JSON.stringify(data), contentType: type};
-			
-			$.ajax(s).done(function(value, status, request) {
 				
-				resolve(value);
+				$.ajax(s).done(function(value, status, request) {
 				
-			}).fail(function(status, request) {
-				
-				reject(Error(request.status + ": " + request.statusText));
-			
+					resolve(value);
+
+				}).fail(function(status, request) {
+
+					reject(Error(request.status + ": " + request.statusText));
+
+				})
+
 			});
 			
 		});
@@ -111,9 +156,9 @@ Google = function() {
   return {
 
     // -- External Functions -- //
-    initialise : function(token, type) {
+    initialise : function(token, type, expires, update) {
 			
-			_init(token, type);
+			_init(token, type, expires, update);
 
 			// -- Return for Chaining -- //
 			return this;

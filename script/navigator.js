@@ -53,7 +53,7 @@ Navigator = function() {
 		if (container.children("ul").length === 0) {
 			
 			container.busy("load");
-		
+					
 			global.google.export(script.id).then(function(response) {
 				
 				if (response && response.files) {
@@ -78,10 +78,10 @@ Navigator = function() {
 				} else {
 					if (container.isBusy()) container.busy();
 				}
-			}, function(err) {
+			}, function(e) {
 				if (container.isBusy()) container.busy();
-				container.err(err);
-				if (_debug) console.log("LOAD ERROR", err);
+				container.err(e);
+				global.flags.error("Google Script Export", e);
 			});
 			
 		} else {

@@ -19,6 +19,7 @@ Basic Keyboard Actions
 * Diff (Github) Saved Script              ==>     __(SHIFT) + [CTRL | ⌘] + M__
 * Abandon Local Changes                   ==>     __[CTRL SHIFT | ⌘ SHIFT] + X²__
 * Commit (Customise) File/s to Github     ==>     __(SHIFT) + [CTRL | ⌘] + G__
+* Deploy Script to another Script         ==>     __[CTRL | ⌘] + Enter__
 
 Keyboard Help
 -------------

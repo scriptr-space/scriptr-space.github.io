@@ -263,7 +263,7 @@ App = function() {
 				if (saving) {
 
 					if (code) global.navigator.busy(all ? code.script.id : code.file.id, "save");
-
+	
 					global.google.save(code.script.id, code.script.files).then(function() {
 
 						Object.keys(saving).forEach(function(id) {
@@ -607,7 +607,7 @@ App = function() {
 							_selected.git.selected = !_selected.git.selected; // Reverse Selection
 
 							// -- Cancel Commit -- //
-							global.editor.addCommand("Commit", "Ctrl-X", "Ctrl-C", (function(code) {
+							global.editor.addCommand("Commit", "Ctrl-X", "Command-X", (function(code) {
 								return function(ed) {
 									global.editor.removeCommand("Select Files").removeCommand("Review").removeCommand("Cancel"); // Remove other Commands
 									global.navigator.reload(code.script);
@@ -616,7 +616,7 @@ App = function() {
 							// -- Cancel Commit -- //
 
 							// -- Review Commit -- //
-							global.editor.addCommand("Review", "Ctrl-Enter", "Ctrl-Enter", (function(code, selected) {
+							global.editor.addCommand("Review", "Ctrl-Enter", "Command-Enter", (function(code, selected) {
 								return function(ed) {
 									global.editor.removeCommand("Select Files").removeCommand("Review").removeCommand("Cancel"); // Remove other Commands
 
@@ -635,7 +635,7 @@ App = function() {
 											global.app.loaded("Commit to Github -- Review", result, _, _, _, _, true, true);
 
 											// -- Cancel Commit -- //
-											global.editor.addCommand("Cancel", "Ctrl-X", "Ctrl-C", (function(code) {
+											global.editor.addCommand("Cancel", "Ctrl-X", "Command-C", (function(code) {
 												return function(ed) {
 													global.editor.removeCommand("Commit").removeCommand("Cancel"); // Remove other Commands
 													global.navigator.reload(code.script); // Force a reload to get back to a consistent state
@@ -643,7 +643,7 @@ App = function() {
 											})(code));
 
 											// -- Go Go Commit -- //
-											global.editor.addCommand("Commit", "Ctrl-Enter", "Ctrl-Enter", (function(code, selected) {
+											global.editor.addCommand("Commit", "Ctrl-Enter", "Command-Enter", (function(code, selected) {
 												return function(ed) {
 
 													global.navigator.busy(_id);
@@ -1233,7 +1233,7 @@ App = function() {
 
 					} else {
 						
-						//global.navigator.busy(_id);
+						// global.navigator.busy(_id);
 					
 					}
 
@@ -1246,6 +1246,270 @@ App = function() {
 
 			}
 
+		},
+		
+		deploy : function() {
+			
+			if (code) {
+    
+    		global.navigator.busy(code.script.id, "deploy");
+
+				global.google.scripts().then(function(scripts) {
+
+					// -- Load the Deployment Instructions -- //
+					$.ajax({url: "interact/SCRIPTS.md", dataType: "text"}).done(function(result) {
+				
+						var meta = {
+							line: result.split(/\r\n|\r|\n/).length - 1,
+							lines: {},
+							scripts: "",
+							instructions: result
+						};
+						
+						var _continue = function() {
+							
+							// -- Cancel Deploy -- //
+							global.editor.addCommand("Cancel", "Ctrl-X", "Command-X", (function(code) {
+								return function(ed) {
+									global.editor.removeCommand("Deploy to Script").removeCommand("Cancel"); // Remove other Commands
+										global.navigator.reload(code.script); // Force a reload to get back to a consistent state
+									};
+							})(code));
+							
+							global.editor.addCommand("Deploy", "Ctrl-Enter", "Command-Enter", (function(code, scripts) {
+								
+								return function(ed) {
+
+									if (scripts) {
+
+										var selected_Row = ed.selection.lead.row;
+										
+										if (meta.lines["Line_" + selected_Row]) {
+											
+											global.flags.log("Selected Script", meta.lines["Line_" + selected_Row]);
+											
+											for (var i = 0; i < scripts.length; i++) {
+
+												if (scripts[i].id == meta.lines["Line_" + selected_Row]) {
+													
+													var script = scripts[i];
+
+													$.ajax({url: "interact/DEPLOY.md", dataType: "text"}).done(function(result) {
+													
+														// Update Script Names //
+														result = result.replace(new RegExp(RegExp.escape("{{SRC-SCRIPT}}"), "g"), code.script.name)
+														result = result.replace(new RegExp(RegExp.escape("{{DST-SCRIPT}}"), "g"), script.name)
+														
+														// Prep Meta Object for Selection //
+														var meta = {
+															line : result.split(/\r\n|\r|\n/).length - 1,
+															files : [],
+															instructions : result
+														};
+														
+														global.google.export(script.id).then(function(response) {
+															
+															if (response && response.files) {
+																
+																// Do comparison between current script and target script (delete etc)
+																var src_files = code.script.files.sort(function(a, b) {
+																	return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+																});
+																var dst_files = response.files.sort(function(a, b) {
+																	return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+																});
+																
+																src_files.forEach(function(src_file) {
+																	
+																	var dst_file = dst_files.find(function(value, index) {
+																		return value.name.toLowerCase() == src_file.name.toLowerCase();
+																	});
+																	
+																	if (!dst_file) {
+																		
+																		// Add File
+																		meta.files.push({
+																			action : {code : "+", name : "add"},
+																			source : src_file.source,
+																			name : src_file.name,
+																			type : src_file.type,
+																			selected : true,
+																		});
+																		
+																	} else if (hash.hex(src_file.source) != hash.hex(dst_file.source)) {
+																		
+																		// Changed File
+																		meta.files.push({
+																			action : {code : "#", name : "update"},
+																			id : dst_file.id,
+																			source : src_file.source,
+																			name : src_file.name,
+																			selected : true,
+																		});
+																		
+																	}
+																	
+																});
+																
+																dst_files.forEach(function(dst_file) {
+																	var src_file = src_files.find(function(value, index) {
+																		return value && value.name.toLowerCase() == dst_file.name.toLowerCase();
+																	});
+																	if (!src_file) {
+																		
+																		// Remove File
+																		meta.files.push({
+																			action : {code : "-", name : "remove"},
+																			id : dst_file.id,
+																			name : dst_file.name,
+																			selected : true,
+																		});
+																		
+																	}
+																});
+																
+																var _showFiles = function(r, c) {
+																	
+																	meta.length = meta.line;
+																	meta.display_files = "";
+																	meta.lines = {};
+																	
+																	meta.files.sort(function(a, b) {
+																		return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+																	}).forEach(function(file) {
+
+																		meta.display_files += "\n";
+																		meta.length += 1;
+																		meta.display_files += ("*\t" + file.action.code + " [" + (file.selected ? "x" : " ") + "] " + file.name);
+																		meta.lines["Line_" + meta.length] = file;
+
+																	});
+																	
+																	global.app.loaded("Deploy to Script", 
+																										meta.instructions.replace(new RegExp(RegExp.escape("{{FILES}}"), "g"), meta.display_files), _, _, _, _, true, false, r, c);
+																	
+																}
+																
+
+																global.editor.addCommand("Select", "Space", "Space", function(ed) {
+
+																	var _selected = meta.lines["Line_" + ed.selection.lead.row];
+																	if (_selected) _selected.selected = !_selected.selected;
+																	_showFiles(ed.selection.lead.row, ed.selection.lead.column);
+																	
+																});
+																
+																global.editor.removeCommand("Deploy").addCommand("Deploy", "Ctrl-Enter", "Command-Enter", (function(id, destination, files) {
+																	return function(ed) {
+																		files.forEach(function(file) {
+																			
+																			if (file.selected) {
+																				if (file.action.name == "add") { // Add new file
+																					destination.files.push({
+																						name: file.name,
+																						source: file.source,
+																						type: file.type,
+																					});
+																				} else if (file.action.name == "remove") { // Remove file
+																					for (var d = destination.files.length - 1; d >= 0; d--) {
+																						if(destination.files[d].id === file.id) {
+																							destination.files.splice(d, 1);
+																							break;
+																						}
+																					}
+																				} else if (file.action.name == "update") { // Update Source in file
+																					destination.files.find(function(value, index) {
+																						return value.id == file.id;
+																					}).source = file.source;
+																				}
+																			}
+																		});
+																		
+																		global.navigator.busy(id);
+																		
+																		global.google.save(id, destination.files).then(function() {
+
+																			global.editor.removeCommand("Deploy").removeCommand("Select").removeCommand("Cancel");
+																			global.navigator.busy(id).reload(code.script);
+
+																		}, function(e) {
+
+																			global.flags.error("Google Drive Save", e);
+																			global.navigator.busy(code.script.id).error(code.script.id, e);
+
+																		});
+																		
+																	}
+																})(script.id, response, meta.files));
+																
+																// -- Cancel Deploy -- //
+																global.editor.addCommand("Cancel", "Ctrl-X", "Command-X", (function(code) {
+																	return function(ed) {
+																		global.editor.removeCommand("Deploy").removeCommand("Select").removeCommand("Cancel"); // Remove other Commands
+																			global.navigator.reload(code.script); // Force a reload to get back to a consistent state
+																		};
+																})(code));
+							
+																_showFiles();
+																
+															}
+															
+														}, function(e) {
+															global.flags.error("Google Script Export", e);
+														});
+														
+													});
+													
+													break;
+
+												}
+
+											}
+
+										}
+
+									}
+								
+								};
+								
+							})(code, scripts));
+
+							global.app.loaded("Select Target Script", meta.instructions.replace(new RegExp(RegExp.escape("{{SCRIPTS}}"), "g"),
+								meta.scripts), _, _, _, _, true);
+
+						}
+						
+						// -- Show Each Script -- //
+						scripts.forEach(function(script) {
+			
+							meta.scripts += "\n\n";
+							meta.line += 2;
+							meta.scripts += ("*\t" + script.name);
+							meta.lines["Line_" + meta.line] = script.id;
+
+							if (script.description) {
+								meta.scripts += ("\n\t\t" + script.description);
+								meta.line += 1;
+								meta.lines["Line_" + meta.line] = script.id;
+							}
+							
+						});
+						
+						_continue();
+						
+					});
+				
+				}, function(e) {
+							
+					global.flags.error("Google Scripts Fetch", e);
+					global.navigator.busy(code.script.id).error(code.script.id, e);
+							
+				});
+
+				global.navigator.busy(code.script.id);
+			
+			}
+			
 		},
 		// == Functions == //
 		

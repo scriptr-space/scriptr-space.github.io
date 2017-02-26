@@ -113,7 +113,7 @@ Github = function() {
   return {
 
     // -- External Functions -- //
-    initialise : function(github_token, github_token_type) {
+    initialise : function(github_token, github_token_type, expires) {
 			
 			// -- Set Up Scoped Variables -- //
 			_api = "https://api.github.com";

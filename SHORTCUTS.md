@@ -97,7 +97,6 @@ Other
 * Show the settings menu  ==>     __[CTRL | ⌘] + -__
 * Toggle comment          ==>     __[CTRL | ⌘] + /__
 * Transpose letters       ==>     __[CTRL] + T__
-* Enter full screen       ==>     __[CTRL | ⌘] + Enter__
 * Change to lower case    ==>     __[CTRL SHIFT] + U__
 * Change to upper case    ==>     __[CTRL] + U__
 * Overwrite               ==>     __Insert__

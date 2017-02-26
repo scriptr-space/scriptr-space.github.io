@@ -322,7 +322,7 @@ Editor = function() {
 		},
 		
 		toggleOverwrite : function() {
-			_editor.setOverwrite(!_editor().getOverwrite());
+			_editor.setOverwrite(!_editor.getOverwrite());
 			return this; // -- Return for Chaining -- //
 		},
 		

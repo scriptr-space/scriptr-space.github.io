@@ -39,6 +39,8 @@ Interaction = function() {
 				return;
 			} else if (e.ctrlKey || e.metaKey) {
 				switch(e.which) {
+					case 13: // Enter - Deploy Script to another Script
+						e.preventDefault(); _functions.deploy(); break;
 					case 37: // Left Arrow - Pull Out Navigator
 						e.preventDefault(); _navigator.show(); break;
 					case 38: // Up Arrow - Go to Full Screen Mode
@@ -56,7 +58,6 @@ Interaction = function() {
 						}
 						break;
 					case 56: // 8 - Change Theme/Font (Cycle Forwards)
-						console.log("BLAH")
 						e.preventDefault();
 						if (e.shiftKey) { // Shift Pressed, so change Font instead
 							_editor.changeFont(false);
@@ -178,6 +179,9 @@ Interaction = function() {
 		});
 		_editor.addCommand("Custom Commit to Github", "Ctrl-Shift-G", "Command-Shift-G",
 			 function() {_functions.commit(true)});
+		_editor.addCommand("Deploy to another Script", "Ctrl-Enter", "Command-Enter", function() {
+			_functions.deploy();
+		});
 		// -- Action Editor Shortcuts -- //
 
 		// -- Further Show Editor Shortcuts -- //
