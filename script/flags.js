@@ -1,7 +1,7 @@
 Flags = function() {
 
 	// -- Internal Variables -- //
-	var _alert = false, _debug = false, _development = false, _base;
+	var _alert = false, _debug = false, _development = false, _page = false, _base;
 	
 	// -- Internal Functions -- //
 	var _parse = function() {
@@ -25,6 +25,8 @@ Flags = function() {
 		}
 		
 		_development = (_url.attr("host").split(".")[0] == "dev" || _url.param("dev") === "" || _url.fparam("dev") === "");
+		
+		_page = (_url.param("page") === "" || _url.fparam("page") === "");
 		
 		_base = _url.attr("protocol") + "://" + _url.attr("host") + 
 			(_url.attr("port") && _url.attr("port") != 80 && _url.attr("port") != 443 ? ":" + _url.attr("port") : "") + "/";
@@ -67,7 +69,7 @@ Flags = function() {
 					},
 		
 					full : function(path) {
-						return _base + path;
+						return _base + (path ? path : "");
 					},
 					
 					debug : function() {
@@ -92,6 +94,10 @@ Flags = function() {
 							console.log.apply(console, arguments);
 						}
 						return this;
+					},
+					
+					page : function() {
+						return _page;
 					},
 			
 				}

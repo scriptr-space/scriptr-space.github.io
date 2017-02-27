@@ -23,7 +23,7 @@ $(function() {
 	// -- Auth Triggers & Functions -- //
 	var google_SignIn = function() {
 		hello.login("google", {
-			force: false, display : singlePage ? "page" : "popup",
+			force: false, display : (singlePage || global.flags.page()) ? "page" : "popup",
 			scope : encodeURIComponent(GOOGLE_SCOPES.join(" ")),
 		}).then(function(a) {
 			global.flags.log("Signed into Google", a);
@@ -242,7 +242,7 @@ $(function() {
 				google : GOOGLE_CLIENT_ID,
 				github : global.flags.development() ? GITHUB_CLIENT_ID_DEV : GITHUB_CLIENT_ID,
 			}, {
-				redirect_uri : singlePage ? "" : global.flags.full("redirect"),
+				redirect_uri : (singlePage || global.flags.page()) ? global.flags.full() : global.flags.full("redirect"),
 				oauth_proxy : "https://auth-server.herokuapp.com/proxy"
 			});
 			// -- Set Up Hello.js Auth-Flow -- //
