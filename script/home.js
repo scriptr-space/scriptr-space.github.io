@@ -236,13 +236,13 @@ $(function() {
 		// -- Set-Up Local Forage -- //
 		
 		var _start = function() {
-			
+						
 			// -- Set Up Hello.js Auth-Flow -- //
 			hello.init({
 				google : GOOGLE_CLIENT_ID,
 				github : global.flags.development() ? GITHUB_CLIENT_ID_DEV : GITHUB_CLIENT_ID,
 			}, {
-				redirect_uri : singlePage ? "" : "redirect",
+				redirect_uri : singlePage ? "" : global.flags.full("redirect"),
 				oauth_proxy : "https://auth-server.herokuapp.com/proxy"
 			});
 			// -- Set Up Hello.js Auth-Flow -- //

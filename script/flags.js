@@ -1,7 +1,7 @@
 Flags = function() {
 
 	// -- Internal Variables -- //
-	var _alert = false, _debug = false, _development = false;
+	var _alert = false, _debug = false, _development = false, _base;
 	
 	// -- Internal Functions -- //
 	var _parse = function() {
@@ -26,6 +26,9 @@ Flags = function() {
 		
 		_development = (_url.attr("host").split(".")[0] == "dev" || _url.param("dev") === "" || _url.fparam("dev") === "");
 		
+		_base = _url.attr("protocol") + "://" + _url.attr("host") + 
+			(_url.attr("port") && _url.attr("port") != 80 && _url.attr("port") != 443 ? ":" + _url.attr("port") : "") + "/";
+
 		// -- Load Remote Console Script Function -- //
 		var _load = function (id) {
     	return new Promise(function(resolve, reject) {
@@ -63,6 +66,10 @@ Flags = function() {
 						return _alert;
 					},
 		
+					full : function(path) {
+						return _base + path;
+					},
+					
 					debug : function() {
 						return _debug;
 					},
