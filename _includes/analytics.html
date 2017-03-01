@@ -1,8 +1,23 @@
-<script>
-  (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
-  (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
-  m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
-  })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
-  ga('create', '{{ site.analytics.id }}', 'auto');
-  ga('send', 'pageview');
+<script type="text/javascript">
+  var __f = false;
+  var __a = function() {
+    (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+      (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+      m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+    })(window,document,'script','https://www.google-analytics.com/analytics.js','ga');
+    ga('create', '{{ site.analytics.id }}', 'auto');
+    ga('send', 'pageview');
+    __f = true;
+  };
+  if (window.addEventListener) {
+    {% if site.analytics.scroll %}
+    window.addEventListener("scroll", function() {if ((document.documentElement.scrollTop != 0 && __f === false) || (document.body.scrollTop != 0 && __f === false)) __a();}, true);
+    {% else %}
+    window.addEventListener("load", __a, false);
+    {% endif %}
+  } else if (window.attachEvent) {
+    window.attachEvent("onload", __a);
+  } else {
+    window.onload = __a;
+  }
 </script>

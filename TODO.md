@@ -11,6 +11,7 @@ TODO LIST
 * Global code store object and background updates
 * Scroll Performance on IOS
 * Register (for automatic removal) temporary interaction commands (or handle 'states' in the Interaction.js module)
+* Owner / Owning Organisation on each script? <-- Check API Response
 
 Complete
 --------

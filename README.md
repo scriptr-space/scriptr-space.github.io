@@ -7,19 +7,21 @@ Control is via keyboard shortcuts (listed blow) for simplicity. Small icons/colo
 
 Key: ChromeOS / Win / Linux | Mac || Touch || Repeat  ==>   ⌨ | 🍏 || ☝ || ²
 
-Basic Keyboard Actions
-----------------------
-* Cycle through available (Fonts) Themes  ==>     __(SHIFT) + [CTRL | ⌘] + 8 / 9__
-* Pull out Navigator                      ==>     __[CTRL | ⌘] + Left || Swipe Left__
-* Push away Navigator                     ==>     __[CTRL | ⌘] + Right || Swipe Right__
-* Go Full Screen                          ==>     __[CTRL | ⌘] + Up || Pinch Out__
-* Exit Full Screen                        ==>     __[CTRL | ⌘] + Down || Pinch In__
+Basic Keyboard Commands
+-----------------------
 * Save (Entire) Script/File               ==>     __(SHIFT) + [CTRL | ⌘] + S__
 * Add (HTML) / Remove File from Script    ==>     __(SHIFT) + [CTRL | ⌘] + B / Q²__
 * Diff (Github) Saved Script              ==>     __(SHIFT) + [CTRL | ⌘] + M__
 * Abandon Local Changes                   ==>     __[CTRL SHIFT | ⌘ SHIFT] + X²__
 * Commit (Customise) File/s to Github     ==>     __(SHIFT) + [CTRL | ⌘] + G__
 * Deploy Script to another Script         ==>     __[CTRL | ⌘] + Enter__
+
+Display Options
+---------------
+* Cycle through Fonts (-/+)               ==>     __SHIFT + [ALT | ⌥] + 7 / 8__
+* Cycle through Themes (-/+)              ==>     __SHIFT + [ALT | ⌥] + 9 / 0__
+* Toggle Navigator                        ==>     __[ALT | ⌥] + N || Swipe [Left / Right]__
+* Toggle Full Screen                      ==>     __[ALT | ⌥] + M || Pinch [In / Out]__
 
 Keyboard Help
 -------------

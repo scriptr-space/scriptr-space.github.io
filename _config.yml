@@ -39,4 +39,5 @@ fonts:								"Anonymous+Pro:400|Inconsolata:400|Roboto:400,700|Roboto+Mono:400|
 # Extras
 analytics:
   enable:							true
+  scroll:							false
   id:									"UA-53673057-7"

@@ -41,38 +41,7 @@ Interaction = function() {
 				switch(e.which) {
 					case 13: // Enter - Deploy Script to another Script
 						e.preventDefault(); _functions.deploy(); break;
-					case 37: // Left Arrow - Pull Out Navigator
-						e.preventDefault(); _navigator.show(); break;
-					case 38: // Up Arrow - Go to Full Screen Mode
-						if (screenfull.enabled && !screenfull.isFullscreen) {
-							e.preventDefault();
-							screenfull.request();
-						}
-						break;
-					case 39: // Right Arrow - Push Away Navigator
-						e.preventDefault(); _navigator.hide(); break;
-					case 40: // Down Arrow - Exit out of Full Screen Mode
-						if (screenfull.enabled && screenfull.isFullscreen) {
-							e.preventDefault();
-							screenfull.exit();
-						}
-						break;
-					case 56: // 8 - Change Theme/Font (Cycle Forwards)
-						e.preventDefault();
-						if (e.shiftKey) { // Shift Pressed, so change Font instead
-							_editor.changeFont(false);
-						} else { // Change There
-							_editor.changeTheme(false);
-						}
-						break;
-					case 57: // 9 - Change Theme/Font (Cycle Backwards)
-						e.preventDefault();
-						if (e.shiftKey) { // Shift Pressed, so change Font instead
-							_editor.changeFont(true);
-						} else { // Change There
-							_editor.changeTheme(true);
-						}
-						break;
+					
 					case 66: // B = Add (HTML) File to Script
 						e.preventDefault(); _functions.create(e.shiftKey); break;
 					case 71: // G - (Custom) Commit to Github
@@ -95,6 +64,30 @@ Interaction = function() {
 				}
 			} else if (e.altKey) {
 				switch(e.which) {
+					case 55: // 7 - Change Font (Cycle Backwards)
+						if (e.shiftKey) {
+							e.preventDefault();
+							_editor.changeFont(true);
+						}
+						break;
+					case 56: // 8 - Change Font (Cycle Forwards)
+						if (e.shiftKey) {
+							e.preventDefault();
+							_editor.changeFont(false);
+						}
+						break;
+					case 57: // 9 - Change Theme (Cycle Backwards)
+						if (e.shiftKey) {
+							e.preventDefault();
+							_editor.changeTheme(true);
+						}
+						break;
+					case 48: // 0 - Change Theme (Cycle Forwards)
+						if (e.shiftKey) {
+							e.preventDefault();
+							_editor.changeTheme(false);
+						}
+						break;
 					case 68: // D - Details
 						e.preventDefault(); _show(_help.details); break;
 					case 73: // I - Instructions
@@ -107,6 +100,18 @@ Interaction = function() {
 						e.preventDefault(); _show(_help.shortcuts); break;
 					case 84: // T - To-Do
 						e.preventDefault(); _show(_help.todo); break;
+					case 109: // M - Toggle Full Screen
+						e.preventDefault(); 
+						if (screenfull.enabled) {
+							if (screenfull.isFullscreen) {
+								screenfull.exit();
+							} else {
+								screenfull.request();
+							}
+						}
+						break;
+					case 110: // N - Toggle Navigator
+						e.preventDefault(); _navigator.toggle(); break;
 					case 118: // V - Versions
 						e.preventDefault(); _show(_help.versions); break;
 					default: return; // Exit Handler
@@ -117,18 +122,6 @@ Interaction = function() {
 	}
 
 	var _enableEditorKeys = function() {
-
-		// -- Add Keyboard Controls to Editor -- //
-		_editor.addCommand("Pull Out Navigator", "Ctrl-Left", "Command-Shift-Left", _navigator.show);
-
-		_editor.addCommand("Go Full Screen", "Ctrl-Up", "Command-Shift-Left", 
-			function() {if (screenfull.enabled && !screenfull.isFullscreen) screenfull.request();});
-
-		_editor.addCommand("Push Away Navigator", "Ctrl-Right", "Command-Shift-Right", _navigator.hide);
-
-		_editor.addCommand("Exit Full Screen", "Ctrl-Down", "Command-Down",
-			function() {if (screenfull.enabled && screenfull.isFullscreen) screenfull.exit();});
-		// -- Add Keyboard Controls to Editor -- //
 
 		// -- Action Editor Shortcuts -- //
 		_editor.addCommand("Toggle Insert/Overwrite", "Ctrl-I", "Command-I", _editor.toggleOverwrite);
@@ -144,20 +137,6 @@ Interaction = function() {
 		});
 		_editor.addCommand("Diff Script to Github", "Ctrl-Shift-M", "Command-Shift-M",
 											 function() {_functions.diff(true)});
-		
-		_editor.addCommand("Change Font", "Ctrl-Shift-8", "Command-Shift-8", function() {
-			_editor.changeFont(true); // Change Font (Reverse)
-		});
-		_editor.addCommand("Change Font", "Ctrl-Shift-9", "Command-Shift-9", function() {
-			_editor.changeFont(false); // Change Font (Forwards)
-		});
-		
-		_editor.addCommand("Change Theme", "Ctrl-8", "Command-8", function() {
-			_editor.changeTheme(true); // Change Theme (Reverse)
-		});
-		_editor.addCommand("Change Theme", "Ctrl-9", "Command-9", function() {
-			_editor.changeTheme(false); // Change Theme (Forwards)
-		});
 		
 		_editor.addCommand("Create File in Script", "Ctrl-B", "Command-B", function() {
 			_functions.create();
@@ -184,6 +163,34 @@ Interaction = function() {
 		});
 		// -- Action Editor Shortcuts -- //
 
+		// -- Display Shortcuts -- //
+		_editor.addCommand("Change Font", "Alt-Shift-7", "Option-Shift-6", function() {
+			_editor.changeFont(true); // Change Font (Reverse)
+		});
+		_editor.addCommand("Change Font", "Alt-Shift-8", "Option-Shift-7", function() {
+			_editor.changeFont(false); // Change Font (Forwards)
+		});
+		
+		_editor.addCommand("Change Theme", "Alt-Shift-9", "Option-Shift-8", function() {
+			_editor.changeTheme(true); // Change Theme (Reverse)
+		});
+		_editor.addCommand("Change Theme", "Alt-Shift-0", "Option-Shift-9", function() {
+			_editor.changeTheme(false); // Change Theme (Forwards)
+		});
+		
+		_editor.addCommand("Toggle Full-Screen On/Off", "Alt-M", "Option-M", function() {
+			if (screenfull.enabled) {
+				if (screenfull.isFullscreen) {
+					screenfull.exit();
+				} else {
+					screenfull.request();
+				}
+			}
+		});
+		
+		_editor.addCommand("Toggle Navigator On/Off", "Alt-N", "Option-N", function() {_navigator.toggle()});
+		// -- Display Shortcuts -- //
+		
 		// -- Further Show Editor Shortcuts -- //
 		_editor.addCommand("Show Instructions", "Alt-I", "Option-I", function() {_show(_help.instructions)});
 		_editor.addCommand("Show Readme", "Alt-R", "Option-R", function() {_show(_help.instructions)});
@@ -201,17 +208,8 @@ Interaction = function() {
 
 		
 		// -- Test Command -- //
-		_editor.addCommand("Test Command", "Ctrl-Y", "Command-Y", function () {
-			var request = gapi.client.drive.files.get({
-					fileId : "1AD15F6321C6BEE965F72B61A2CBD895"//, mimeType: "application/vnd.google-apps.script+json"
-				}).then(function(response) {
-						console.log("RESPONSE:", response);
-					}, function(err) {
-						if (_debug) console.log("LOAD ERROR", err);
-					});
-		});
+		_editor.addCommand("Test Command", "Ctrl-Y", "Command-Y", function () {});
 		// -- Test Command -- //
-		
 		
 	}
 

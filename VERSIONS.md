@@ -2,6 +2,7 @@
 VERSION LIST 
 ============
 
+* v1.1.4 | 01/03/2017 | Updated keybindings to avoid clashing with multiple cursors.
 * v1.1.3 | 27/02/2017 | Redirection fixes for default HTTPS.
 * v1.1.2 | 26/02/2017 | Minor bug fixes, seamless background Google Drive Token Refresh and script-to-script deployment added.
 * v1.1.1 | 01/01/2017 | Minor bug fixes and visual preference saving.

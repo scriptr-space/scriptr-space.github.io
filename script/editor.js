@@ -67,6 +67,36 @@ Editor = function() {
   // -- Internal Variables -- //
   var _id = uuid.v4(), Document;
 	var _element, _editor, _session, _mode;
+	var _marker = {
+		cursors : [{row: 0, column: 10}],
+		update : function(html, markerLayer, session, config) {
+			var start = config.firstRow, end = config.lastRow;
+			var cursors = this.cursors;
+			for (var i = 0; i < cursors.length; i++) {
+				var pos = this.cursors[i];
+				if (pos.row < start) {
+					continue;
+				} else if (pos.row > end) {
+					break;
+				} else {
+					var screenPos = session.documentToScreenPosition(pos);
+					var height = config.lineHeight;
+					var width = config.characterWidth;
+					var top = markerLayer.$getTop(screenPos.row, config);
+					var left = markerLayer.$padding + screenPos.column * width;
+					html.push(
+						"<div class='multi_cursor' style='",
+						"height:", height, "px;",
+						"top:", top, "px;",
+						"left:", left, "px; width:", width, "px'></div>"
+					);
+				}
+			}
+		},
+		addCursor : function() {
+			marker.redraw();
+		}
+	}
   // -- Internal Variables -- //
   
 	// -- Internal Functions -- //
@@ -95,12 +125,12 @@ Editor = function() {
 
     // -- External Enums -- //
 		Modes : {
-			css : {mode :"ace/mode/css"},
-			diff : {mode :"ace/mode/diff"},
-			html : {mode : "ace/mode/html"},
+			css : {mode : "ace/mode/css", marker : true},
+			diff : {mode : "ace/mode/diff"},
+			html : {mode : "ace/mode/html", marker : true},
 			interact : {persist_position : true, mode : "ace/mode/markdown"},
-			javascript : {mode : "ace/mode/javascript"},
-			gas : {mode : "ace/mode/javascript", completer : {
+			javascript : {mode : "ace/mode/javascript", marker : true},
+			gas : {mode : "ace/mode/javascript", marker : true, completer : {
 				getCompletions: function(editor, session, pos, prefix, callback) {
 					var base_Namespaces = ["BigNumber", "Browser", "CacheServer", "CalendarApp", "Charts", "ContactsApp", "ContentService", "DocumentApp",
 															 "Drive", "DriveApp", "FormApp", "GmailApp", "GroupsApp", "HtmlService", "JSON", "Jdbc", "LanguageApp", "LinearOptimizationService",
@@ -115,17 +145,17 @@ Editor = function() {
 					}));
     		}
 			}},
-			gas_html_css : {mode : "ace/mode/css", interceptors : [
+			gas_html_css : {mode : "ace/mode/css", marker : true, interceptors : [
 				{match : "</style>", mask : "/* </ style > <== ** AMMENDED BY SCRIPTR ** ¯\_(ツ)_/¯ */"},
 				{match : "<style>", mask : "/* < style > <==  ** AMMENDED BY SCRIPTR ** to hide mixed css/html from syntax checking, but relax...these amendments won't be saved! */"},
 			]},
-			gas_html_js : {mode : "ace/mode/javascript", interceptors : [
+			gas_html_js : {mode : "ace/mode/javascript", marker : true, interceptors : [
 				{match : "</script>", mask : "// </ script > <== ** AMMENDED BY SCRIPTR ** ¯\_(ツ)_/¯"},
 				{match : "<script>", mask : "// < script > <== ** AMMENDED BY SCRIPTR ** to hide mixed js/html from syntax checking, but relax...these amendments won't be saved!"},
 			]},
 			markdown : {mode : "ace/mode/markdown"},
 			text : {mode : "ace/mode/text"},
-			yaml : {mode : "ace/mode/yaml"},
+			yaml : {mode : "ace/mode/yaml", marker : true},
 		},
     // -- External Enums -- //
     
@@ -163,6 +193,7 @@ Editor = function() {
 			
 			// -- Set default mode -- //
 			_mode = this.Modes.text;
+			
 			// -- Return for Chaining -- //
 			return this;
 			
@@ -232,6 +263,12 @@ Editor = function() {
 			if (afterChange) _session.on("change", function(e) {
 				afterChange(_getValue());
 			}); // Enable Edit Triggers
+			
+			// -- Add Multi-Cursor / Marker if required -- //
+			if (_mode.marker) {
+				_marker.session = _session.session;
+				_session.addDynamicMarker(_marker, true);
+			}
 			
 			// -- Got to original spot -- //
 			if (_row || _col) _editor.gotoLine(_row + 1, _col, true);

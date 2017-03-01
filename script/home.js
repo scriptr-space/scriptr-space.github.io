@@ -304,7 +304,6 @@ $(function() {
 			
 		}
 		// -- Run Local Forage Test / Configuration -- //
-		
 
 	});
 

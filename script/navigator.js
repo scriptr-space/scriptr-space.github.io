@@ -311,6 +311,15 @@ Navigator = function() {
 			return this;
 		},
 		
+		toggle : function() {
+			if (_element && _element.is(":visible")) {
+				_hide();
+			} else {
+				_show();
+			}
+			return this;
+		},
+		
 		busy : function(id, status) {
 			$("li#" + id).busy(status);
 			return this;
@@ -322,14 +331,14 @@ Navigator = function() {
 		},
 		
 		change : function(id, status, for_time, remove) {
-			var _element = $("li#" + id + " a").removeClass(function(index, css) {
+			var __element = $("li#" + id + " a").removeClass(function(index, css) {
 				return (css.match (/(^|\s)status-\S+/g) || []).join(' ');
 			}).addClass(status);
 			if (for_time) {
 				if (remove) {
-					_element.delay(for_time).queue(function() {$(this).fadeOut().remove().dequeue();});
+					__element.delay(for_time).queue(function() {$(this).fadeOut().remove().dequeue();});
 				} else {
-					_element.delay(for_time).queue(function(_class) {
+					__element.delay(for_time).queue(function(_class) {
 						return function() {$(this).removeClass(_class).dequeue();}
 					}(status));
 				}
