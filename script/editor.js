@@ -125,12 +125,12 @@ Editor = function() {
 
     // -- External Enums -- //
 		Modes : {
-			css : {mode : "ace/mode/css", marker : true},
+			css : {mode : "ace/mode/css", marker : false},
 			diff : {mode : "ace/mode/diff"},
-			html : {mode : "ace/mode/html", marker : true},
+			html : {mode : "ace/mode/html", marker : false},
 			interact : {persist_position : true, mode : "ace/mode/markdown"},
-			javascript : {mode : "ace/mode/javascript", marker : true},
-			gas : {mode : "ace/mode/javascript", marker : true, completer : {
+			javascript : {mode : "ace/mode/javascript", marker : false},
+			gas : {mode : "ace/mode/javascript", marker : false, completer : {
 				getCompletions: function(editor, session, pos, prefix, callback) {
 					var base_Namespaces = ["BigNumber", "Browser", "CacheServer", "CalendarApp", "Charts", "ContactsApp", "ContentService", "DocumentApp",
 															 "Drive", "DriveApp", "FormApp", "GmailApp", "GroupsApp", "HtmlService", "JSON", "Jdbc", "LanguageApp", "LinearOptimizationService",
@@ -145,17 +145,17 @@ Editor = function() {
 					}));
     		}
 			}},
-			gas_html_css : {mode : "ace/mode/css", marker : true, interceptors : [
+			gas_html_css : {mode : "ace/mode/css", marker : false, interceptors : [
 				{match : "</style>", mask : "/* </ style > <== ** AMMENDED BY SCRIPTR ** ¯\_(ツ)_/¯ */"},
 				{match : "<style>", mask : "/* < style > <==  ** AMMENDED BY SCRIPTR ** to hide mixed css/html from syntax checking, but relax...these amendments won't be saved! */"},
 			]},
-			gas_html_js : {mode : "ace/mode/javascript", marker : true, interceptors : [
+			gas_html_js : {mode : "ace/mode/javascript", marker : false, interceptors : [
 				{match : "</script>", mask : "// </ script > <== ** AMMENDED BY SCRIPTR ** ¯\_(ツ)_/¯"},
 				{match : "<script>", mask : "// < script > <== ** AMMENDED BY SCRIPTR ** to hide mixed js/html from syntax checking, but relax...these amendments won't be saved!"},
 			]},
 			markdown : {mode : "ace/mode/markdown"},
 			text : {mode : "ace/mode/text"},
-			yaml : {mode : "ace/mode/yaml", marker : true},
+			yaml : {mode : "ace/mode/yaml", marker : false},
 		},
     // -- External Enums -- //
     
