@@ -114,7 +114,7 @@ $(function() {
 				// -- Enable Navigator, Interaction, Load Initial Help & Instructions Document -- //
 				if (!global.navigator) global.navigator = Navigator().initialise(
 					global.container, global.editor, global.app.status, 
-					global.app.loaded, global.app.clear, global.app.force, global.flags.debug);
+					global.app.loaded, global.app.clear, global.app.force);
 
 				if (!global.interaction) global.interaction = Interaction().initialise(
 					window, global.editor, global.navigator, {

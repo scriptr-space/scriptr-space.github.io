@@ -20,7 +20,6 @@ Navigator = function() {
 	}
 	
 	$.fn.err = function(err) {
-		console.log("EXCEPTION CALLED", err);
 		if (this.find("span.error").length > 0) {
 			this.find("span.error").remove();
 		} else {
@@ -33,7 +32,7 @@ Navigator = function() {
 	// -- JQuery Plugins -- //
 	
   // -- Internal Variables -- //
-	var _id = uuid.v4(), _debug = false;
+	var _id = uuid.v4();
 	var _element, _editor, _navigator, _onLoad, _unload, _status, _force;
   // -- Internal Variables -- //
   
@@ -155,10 +154,11 @@ Navigator = function() {
 						_element.children("ul").remove();
 			 			_toggleScript(_element, script, true);
 						
-					}, function(err) {
+					}, function(e) {
 
-						if (debug) console.log("SAVING/RENAMING ERROR", err);
-						_a.text(_previous).parent().busy("save");
+						if (_a.text(_previous).parent().isBusy()) _a.text(_previous).parent().busy();
+						_a.text(_previous).parent().err(e);
+						global.flags.error("Google Script Saving / Renaming Error", e);
 						
 					});
 					
@@ -252,10 +252,9 @@ Navigator = function() {
   return {
 
     // -- External Functions -- //
-    initialise : function(appendTo, editor, status, onLoad, unload, force, debug) {
+    initialise : function(appendTo, editor, status, onLoad, unload, force) {
 			
 			// -- Set Variables -- //
-			if (debug) _debug = true;
       _editor = editor;
 			_status = status;
 			_onLoad = onLoad;
