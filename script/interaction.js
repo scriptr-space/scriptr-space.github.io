@@ -189,10 +189,13 @@ Interaction = function() {
 		});
 		
 		_editor.addCommand("Toggle Navigator On/Off", "Alt-N", "Option-N", function() {_navigator.toggle()});
+		
+		_editor.addCommand("Diff Script", "Alt-B", "Option-B", function() {_navigator.toggle()});
 		// -- Display Shortcuts -- //
 		
 		// -- Further Show Editor Shortcuts -- //
 		_editor.addCommand("Show Instructions", "Alt-I", "Option-I", function() {_show(_help.instructions)});
+		
 		_editor.addCommand("Show Readme", "Alt-R", "Option-R", function() {_show(_help.instructions)});
 		
 		_editor.addCommand("Show License", "Alt-L", "Option-L", function() {_show(_help.license)});

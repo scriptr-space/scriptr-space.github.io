@@ -1,9 +1,9 @@
 
 🐧 SCRIPTR.SPACE 🐧
 ===================
-A web-based tool for Google Apps Scripts. Better editing, local storage, saving, diff'ing & committing to Github. Built atop of [Ace][1] for speed & ease of use.
+A web-based tool for Google Apps Scripts. Better editing, local storage, saving, diff'ing & committing to Github. Built atop of [Ace][1] for speed & ease of use, feel free to get in touch at [hello@scriptr.space][2].
 
-Control is via keyboard shortcuts (listed blow) for simplicity. Small icons/colours are used to indicate current (♥), changed (★), new (☆), errored (⚠) & saved (✔) files.
+Control is via keyboard shortcuts (listed below) for simplicity. Small icons/colours are used to indicate current (♥), changed (★), new (☆), errored (⚠) & saved (✔) files.
 
 Key: ChromeOS / Win / Linux | Mac || Touch || Repeat  ==>   ⌨ | 🍏 || ☝ || ²
 
@@ -30,3 +30,4 @@ Keyboard Help
 * Show Shortcuts                          ==>     __[ALT | ⌥] + S__
 
   [1]: https://ace.c9.io/ "Ace - The high performance code editor for the web"
+  [2]: hello@scriptr.space
