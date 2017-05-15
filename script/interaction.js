@@ -189,8 +189,6 @@ Interaction = function() {
 		});
 		
 		_editor.addCommand("Toggle Navigator On/Off", "Alt-N", "Option-N", function() {_navigator.toggle()});
-		
-		_editor.addCommand("Diff Script", "Alt-B", "Option-B", function() {_navigator.toggle()});
 		// -- Display Shortcuts -- //
 		
 		// -- Further Show Editor Shortcuts -- //
