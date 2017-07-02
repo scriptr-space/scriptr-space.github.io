@@ -1,0 +1,158 @@
+localstorage:
+  name: localStorage
+  url: https://cdnjs.com/libraries/localStorage
+  project: https://github.com/mortzdk/localStorage
+  ver: 2.0.1
+  license: MIT
+  prod: <script src="https://cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.min.js" integrity="sha256-hrbB6Rx4BnuBnpD/19isEnVQuVWTs1FAnwvAmqcw2cw=" crossorigin="anonymous"></script>
+  dev: <script src="https://cdnjs.cloudflare.com/ajax/libs/localStorage/2.0.1/localStorage.js" integrity="sha256-zM/8b1ZXCHo2KsNusq3o8s63IwA3GOTag3BO/Mi71ow=" crossorigin="anonymous"></script>
+
+jsdiff:
+  name: JS Diff
+  url: https://cdnjs.com/libraries/jsdiff
+  project: https://github.com/kpdecker/jsdiff
+  license: BSD-3-Clause
+  prod: <script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/3.2.0/diff.min.js" integrity="sha256-9rZeWIescmaMzN+OSwsGJZtB1euH9s+mnh9u9/opnYw=" crossorigin="anonymous"></script>
+  dev: <script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/3.2.0/diff.js" integrity="sha256-S6+2vbEc1dWquKUJssAFYikp0UY5lpTiTnQmxaYOhVM=" crossorigin="anonymous"></script>
+
+jshashes:
+  name: JS Hashes
+  url: https://cdnjs.com/libraries/jshashes
+  project: https://github.com/h2non/jshashes
+  ver: 1.0.6
+  license: New-BSD
+  prod: <script src="https://cdnjs.cloudflare.com/ajax/libs/jshashes/1.0.6/hashes.min.js" integrity="sha256-iM9G0ktfECnFTP6l2SzZvsHNy2NEQfSvHaPA888v+HU=" crossorigin="anonymous"></script>
+  dev: <script src="https://cdnjs.cloudflare.com/ajax/libs/jshashes/1.0.6/hashes.js" integrity="sha256-gDeOcoJbRHycFLT6aJXAPxpbjNUbKqIKXhYiO+OXUWw=" crossorigin="anonymous"></script>
+
+screenfull:
+  name: Screenfull
+  url: https://cdnjs.com/libraries/screenfull.js
+  project: https://github.com/sindresorhus/screenfull.js
+  ver: 3.2.2
+  license: MIT
+  prod: <script src="https://cdnjs.cloudflare.com/ajax/libs/screenfull.js/3.2.2/screenfull.min.js" integrity="sha256-BBEvgz7Ny1lJEOu3fKSGrYNkfhfoqjHu9RppGdNeTpI=" crossorigin="anonymous"></script>
+  dev: <script src="https://cdnjs.cloudflare.com/ajax/libs/screenfull.js/3.2.2/screenfull.js" integrity="sha256-aW+jZEmteJDKviTDjy24bHfzZuAIIwMFBtwGfCijNhM=" crossorigin="anonymous"></script>
+
+localforage:
+  name: Localforage
+  url: https://cdnjs.com/libraries/localforage
+  project: https://github.com/mozilla/localForage
+  ver: 1.5.0
+  license: Apache-2.0
+  prod: <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.5.0/localforage.min.js" integrity="sha256-kAq48olJYgx7dR+P9KbS+Q1OjM1vNGUSFDjQjcM0lKA=" crossorigin="anonymous"></script>
+  dev: <script src="https://cdnjs.cloudflare.com/ajax/libs/localforage/1.5.0/localforage.js" integrity="sha256-q3C/Kj9uGHUCBiTlqWhnpfNBPoDvV3CQaXoZaEtAZws=" crossorigin="anonymous"></script>
+
+hammer:
+  name: Hammer
+  url: https://cdnjs.com/libraries/hammer.js
+  project: http://eightmedia.github.com/hammer.js
+  ver: 2.0.8
+  license: MIT
+  prod: <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.min.js" integrity="sha256-eVNjHw5UeU0jUqPPpZHAkU1z4U+QFBBY488WvueTm88=" crossorigin="anonymous"></script>
+  dev: <script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.js" integrity="sha256-GMd3rFxMDNnM5JQEpiKLLl8kSrDuG5egqchk758z59g=" crossorigin="anonymous"></script>
+
+urlparser:
+  name: JQuery URL Parser
+  url: https://cdnjs.com/libraries/jquery-url-parser
+  project: https://github.com/allmarkedup/purl
+  version: 2.3.1
+  license: MIT
+  prod: <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-url-parser/2.3.1/purl.min.js" integrity="sha256-Ok1mfwLL3kRzz/1DUpgwsieObDr+pGVBAKaFxeyXeNk=" crossorigin="anonymous"></script>
+  dev: <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery-url-parser/2.3.1/purl.js" integrity="sha256-CClfiLXZ7XyMeMnUnnifxEwTETRJNKU9HYRsig8BSD8=" crossorigin="anonymous"></script>
+
+hello:
+  name: Hello
+  url: https://cdnjs.com/libraries/hellojs
+  project: https://github.com/MrSwitch/hello.js
+  version: 1.15.1
+  license: MIT
+  prod: <script src="https://cdnjs.cloudflare.com/ajax/libs/hellojs/1.15.1/hello.min.js" integrity="sha256-Ik0hWOywX7ASte0Zm3xa8aMqeFTn2BMB/julZsMRvBI=" crossorigin="anonymous"></script>
+  dev: <script src="https://cdnjs.cloudflare.com/ajax/libs/hellojs/1.15.1/hello.js" integrity="sha256-1AZ0nGAR3LkIkwJ3QgYD4RR7evFplTsJd6wLHZOKERU=" crossorigin="anonymous"></script>
+
+showdown:
+  name: Showdown
+  url: https://cdnjs.com/libraries/showdown
+  project: https://github.com/showdownjs/showdown
+  version: 1.7.1
+  license: BSD-3-Clause
+  prod: <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.7.1/showdown.min.js" integrity="sha256-cgmBpa41tevGSToVfdP9vzuJ5H5WsT12vZizDOlMSFU=" crossorigin="anonymous"></script>
+  dev: <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/1.7.1/showdown.js" integrity="sha256-nArgoS9NZSEeMiNda6cJ+Dw+wBy/P7qsSFYmYOV+OJs=" crossorigin="anonymous"></script>
+
+jquery:
+  name: JQuery
+  url: https://cdnjs.com/libraries/jquery
+  project: http://jquery.com/
+  version: 3.2.1
+  license: MIT
+  prod: <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4=" crossorigin="anonymous"></script>
+  dev: <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js" integrity="sha256-DZAnKJ/6XZ9si04Hgrsxu/8s717jcIzLy3oi35EouyE=" crossorigin="anonymous"></script>
+
+tether:
+  name: Tether
+  url: https://cdnjs.com/libraries/tether
+  project: https://github.com/HubSpot/tether
+  version: 1.4.0
+  license: MIT
+  prod: <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js" integrity="sha256-gL1ibrbVcRIHKlCO5OXOPC/lZz/gpdApgQAzskqqXp8=" crossorigin="anonymous"></script>
+  dev: <script src="https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.js" integrity="sha256-jVfFb7AbGi7S/SLNl8SB4/MYaf549eEs+NlIWMoARHg=" crossorigin="anonymous"></script>
+
+bootstrap:
+  name: Bootstrap
+  url: https://cdnjs.com/libraries/twitter-bootstrap
+  project: http://getbootstrap.com/
+  version: 4.0.0-alpha.6
+  license: MIT
+  prod: <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/js/bootstrap.min.js" integrity="sha256-+kIbbrvS+0dNOjhmQJzmwe/RILR/8lb/+4+PUNVW09k=" crossorigin="anonymous"></script>
+  dev: <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.0.0-alpha.6/js/bootstrap.js" integrity="sha256-O80B9+k8kADyLffStFEQZnTxAU91ZryGbUeKwxO0t3M=" crossorigin="anonymous"></script>
+
+loki:
+  name: LokiJS
+  url: https://cdnjs.com/libraries/lokijs
+  project: http://lokijs.org
+  version: 1.5.0
+  license: MIT
+  prod: <script src="https://cdnjs.cloudflare.com/ajax/libs/lokijs/1.5.0/lokijs.min.js" integrity="sha256-C5eRRjE+2mrxY0mnF95Qu6A/JXddwrgg9QMRZ+Ktxhc=" crossorigin="anonymous"></script>
+  dev: <script src="https://cdnjs.cloudflare.com/ajax/libs/lokijs/1.5.0/lokijs.min.js" integrity="sha256-C5eRRjE+2mrxY0mnF95Qu6A/JXddwrgg9QMRZ+Ktxhc=" crossorigin="anonymous"></script>
+
+clusterize:
+  name: Clusterize.js
+  url: https://cdnjs.com/libraries/clusterize.js
+  project: https://clusterize.js.org/
+  version: 0.17.6
+  license: GPLv3
+  prod: <script src="https://cdnjs.cloudflare.com/ajax/libs/clusterize.js/0.17.6/clusterize.min.js" integrity="sha256-v56TI+wd9PWTvwqrpGaluF6GulSCspBFwQKAcVpXGZc=" crossorigin="anonymous"></script>
+  dev: <script src="https://cdnjs.cloudflare.com/ajax/libs/clusterize.js/0.17.6/clusterize.js" integrity="sha256-d2ft6mverdSdT25oS0c4FNe8x6p8CSbo0hblSmasX4w=" crossorigin="anonymous"></script>
+
+uuid:
+  name: Node UUID
+  url: https://cdnjs.com/libraries/node-uuid
+  project: https://broofa.github.io/node-uuid/
+  version: 1.4.8
+  license: MIT
+  prod: <script src="https://cdnjs.cloudflare.com/ajax/libs/node-uuid/1.4.8/uuid.min.js" integrity="sha256-h7PiJxtxsf7+VkAGN6N+8/0qZrhK7oYJc/pguDnYJi4=" crossorigin="anonymous"></script>
+  dev: <script src="https://cdnjs.cloudflare.com/ajax/libs/node-uuid/1.4.8/uuid.js" integrity="sha256-di30dL7N9597Q8UApQWE7AIjWlR2hbVHreqxh7NiX4I=" crossorigin="anonymous"></script>
+
+yaml:
+  name: JS Yaml
+  url: https://cdnjs.com/libraries/js-yaml
+  project: https://github.com/nodeca/js-yaml
+  version: 3.8.4
+  license: MIT
+  prod: <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.8.4/js-yaml.min.js" integrity="sha256-0fVOf/R0H784sL7gcJSJo2mOapjzsIVdW0Ep3CuOKrg=" crossorigin="anonymous"></script>
+  dev: <script src="https://cdnjs.cloudflare.com/ajax/libs/js-yaml/3.8.4/js-yaml.min.js" integrity="sha256-0fVOf/R0H784sL7gcJSJo2mOapjzsIVdW0Ep3CuOKrg=" crossorigin="anonymous"></script>
+
+ace:
+  name: ACE
+  url: https://cdnjs.com/libraries/ace
+  project: http://ace.ajax.org/
+  version: 1.2.8
+  license: BSD
+  prod: <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.8/ace.js" integrity="sha256-198+Grx89n2ofVwo1LWnNTXxIQZIPZJURv+K73cJ93U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.8/ext-language_tools.js" integrity="sha256-lWjFoKJOA8E3lXU/1gCNhbDX6rCwzfwd0BJpy620TZ4=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.8/ext-searchbox.js" integrity="sha256-Nitxd4t5c0ry8F+deewrFXnSAFKRMCpxPnsQs23Ln8Y=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.8/mode-css.js" integrity="sha256-1DAcULObTRgnG8BqO1aojDFYkDtBg8wN2oVlefQtE7E=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.8/mode-diff.js" integrity="sha256-4QeTsUouWAhGR0MhS+/B9bnA0LtXZ1ryj+WIK/xHUyQ=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.8/mode-html.js" integrity="sha256-J3gfuUF3gcRn5h7kuopnyi1azKx8gObAuF/2ukknwBg=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.8/mode-javascript.js" integrity="sha256-nyhP9pWA7IXRS8R6IT/ux3e3bGOZymx5RMe/cub8w2Q=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.8/mode-markdown.js" integrity="sha256-4/5a1Iyciq5z7FaFTDemyalefnko7q7oHaDOMxdI8t0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.8/mode-text.js" integrity="sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.8/mode-yaml.js" integrity="sha256-aKkFuoiUHumdnJdGC82FrWQ9LOvhOAcT8D3XmRVEXoE=" crossorigin="anonymous"></script>
+  dev: <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.8/ace.js" integrity="sha256-198+Grx89n2ofVwo1LWnNTXxIQZIPZJURv+K73cJ93U=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.8/ext-language_tools.js" integrity="sha256-lWjFoKJOA8E3lXU/1gCNhbDX6rCwzfwd0BJpy620TZ4=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.8/ext-searchbox.js" integrity="sha256-Nitxd4t5c0ry8F+deewrFXnSAFKRMCpxPnsQs23Ln8Y=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.8/mode-css.js" integrity="sha256-1DAcULObTRgnG8BqO1aojDFYkDtBg8wN2oVlefQtE7E=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.8/mode-diff.js" integrity="sha256-4QeTsUouWAhGR0MhS+/B9bnA0LtXZ1ryj+WIK/xHUyQ=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.8/mode-html.js" integrity="sha256-J3gfuUF3gcRn5h7kuopnyi1azKx8gObAuF/2ukknwBg=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.8/mode-javascript.js" integrity="sha256-nyhP9pWA7IXRS8R6IT/ux3e3bGOZymx5RMe/cub8w2Q=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.8/mode-markdown.js" integrity="sha256-4/5a1Iyciq5z7FaFTDemyalefnko7q7oHaDOMxdI8t0=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.8/mode-text.js" integrity="sha256-47DEQpj8HBSa+/TImW+5JCeuQeRkm5NMpJWZG3hSuFU=" crossorigin="anonymous"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.2.8/mode-yaml.js" integrity="sha256-aKkFuoiUHumdnJdGC82FrWQ9LOvhOAcT8D3XmRVEXoE=" crossorigin="anonymous"></script>
+  
+example:
+  name: 
+  url: 
+  ver:
+  prod:
+  dev:

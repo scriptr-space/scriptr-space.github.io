@@ -1,16 +1,12 @@
-// -- Set Up API Google Scopes & IDs -- //
-const GOOGLE_KEY = "AIzaSyAbe5GtlLj0VZWSvC8golSFEZY7eHiYHlQ";
-const GOOGLE_CLIENT_ID = "906733969647-tsscu15blfumt6v8i79663stk8ggdn3t.apps.googleusercontent.com";
+// -- Set Up OAuth Scopes -- //
 const GOOGLE_SCOPES = [
 	"email", "profile",
 	"https://www.googleapis.com/auth/drive.scripts",
 	"https://www.googleapis.com/auth/drive"
 ];
 
-const GITHUB_CLIENT_ID = "770cdacd6fa33a1a269d";
-const GITHUB_CLIENT_ID_DEV = "0e6afe63555ffc47107b";
 const GITHUB_SCOPES = ["basic", "gist", "repo"];
-// -- Set Up API Google Scopes & IDs -- //
+// -- Set Up OAuth Scopes -- //
 
 // -- Global Variables -- //
 var global = {_before : {}, _paging : {}, _after : {}};
