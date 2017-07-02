@@ -2,6 +2,7 @@
 VERSION LIST 
 ============
 
+* v1.1.6 | 02/07/2017 | Updated Screenful (3.2.2), Hellojs (1.15.1). Integrated new Imports YAML file structure.
 * v1.1.5 | 15/05/2017 | Updated JQuery (3.2.1), Screenful (3.2.0), LocalForage (1.5.0), Hellojs (1.14.1), node-uuid (1.4.8), js-yaml (3.8.4)
 * v1.1.4 | 01/03/2017 | Updated keybindings to avoid clashing with multiple cursors.
 * v1.1.3 | 27/02/2017 | Redirection fixes for default HTTPS.
