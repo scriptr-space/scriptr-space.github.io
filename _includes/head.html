@@ -90,10 +90,15 @@
 		<meta name="msapplication-TileImage" content="{{ site.baseurl }}ico/ms-icon-144x144.png">
 		<meta name="theme-color" content="#ffffff">
 		
+		<!-- Allow Home-Pinned Site on Apple / IOS -->
+		<!--
 		<meta name="apple-mobile-web-app-capable" content="yes">
+		-->
 		<meta name="apple-mobile-web-app-status-bar-style" content="black">
 		<meta name="apple-mobile-web-app-title" content="Scriptr">
-		<meta name="mobile-web-app-capable" content="yes"> <!-- Allow Home-Pinned Site on Android -->
+		
+		<!-- Allow Home-Pinned Site on Android -->
+		<meta name="mobile-web-app-capable" content="yes">
 		
 		<!-- Import Scripts -->
 		{% if page.imports %}{% assign _imports = page.imports | split: ';' %}{% for _import in _imports %}

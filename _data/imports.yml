@@ -11,6 +11,7 @@ jsdiff:
   name: JS Diff
   url: https://cdnjs.com/libraries/jsdiff
   project: https://github.com/kpdecker/jsdiff
+  ver: 3.2.0
   license: BSD-3-Clause
   prod: <script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/3.2.0/diff.min.js" integrity="sha256-9rZeWIescmaMzN+OSwsGJZtB1euH9s+mnh9u9/opnYw=" crossorigin="anonymous"></script>
   dev: <script src="https://cdnjs.cloudflare.com/ajax/libs/jsdiff/3.2.0/diff.js" integrity="sha256-S6+2vbEc1dWquKUJssAFYikp0UY5lpTiTnQmxaYOhVM=" crossorigin="anonymous"></script>
@@ -19,10 +20,10 @@ jshashes:
   name: JS Hashes
   url: https://cdnjs.com/libraries/jshashes
   project: https://github.com/h2non/jshashes
-  ver: 1.0.6
+  ver: 1.0.7
   license: New-BSD
-  prod: <script src="https://cdnjs.cloudflare.com/ajax/libs/jshashes/1.0.6/hashes.min.js" integrity="sha256-iM9G0ktfECnFTP6l2SzZvsHNy2NEQfSvHaPA888v+HU=" crossorigin="anonymous"></script>
-  dev: <script src="https://cdnjs.cloudflare.com/ajax/libs/jshashes/1.0.6/hashes.js" integrity="sha256-gDeOcoJbRHycFLT6aJXAPxpbjNUbKqIKXhYiO+OXUWw=" crossorigin="anonymous"></script>
+  prod: <script src="https://cdnjs.cloudflare.com/ajax/libs/jshashes/1.0.7/hashes.min.js" integrity="sha256-H7hBuovONQQrY3zESq6MXx+b5Q3ovOY03taLJUaMauk=" crossorigin="anonymous"></script>
+  dev: <script src="https://cdnjs.cloudflare.com/ajax/libs/jshashes/1.0.7/hashes.js" integrity="sha256-l4iarENM32aE2JRv4mcTf2n8c8EecqFAcuxmAtX+PPI=" crossorigin="anonymous"></script>
 
 screenfull:
   name: Screenfull

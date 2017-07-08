@@ -12,6 +12,7 @@ TODO LIST
 * Scroll Performance on IOS
 * Register (for automatic removal) temporary interaction commands (or handle 'states' in the Interaction.js module)
 * Owner / Owning Organisation on each script? <-- Check API Response
+* Occasional 401 issue for initial OAuth calls to Google. Catch and remove local Hello.js state / cookie?
 
 Complete
 --------
@@ -62,4 +63,4 @@ Complete
 * Token Expiration for Google Drive - need to handle automatically <-- DONE
 * Gracefully handle Google Drive token expiration ... <-- DONE
 
-ᕕ( ᐛ )ᕗ JD ♑ - 2017-01-01
+ᕕ( ᐛ )ᕗ JD ♑ - 2017-07-02
