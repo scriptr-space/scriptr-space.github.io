@@ -166,7 +166,10 @@ $(function() {
 		$.ajax({
 			url: "PUBLIC.md", type: "get", dataType: "html",
 			async: true, success: function(result) {
-				if (result) global.app.loaded("Getting Started ...", result);
+				if (result) {
+					result += ("\n\n" + "UA: " + navigator.userAgent);
+					global.app.loaded("Getting Started ...", result);
+				}
 			}
 		});
 		
