@@ -6,6 +6,9 @@
 	float: left;
   width: 100%;
   height: 100%;
+  .ace_scrollbar, .ace_scroller {
+    -webkit-overflow-scrolling: touch; // Smooth Scrolling on Mobile / IOS
+  }
   .ace_search {
     background-color: #333;
     border-color: #111;
